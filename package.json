@@ -1,0 +1,24 @@
+{
+  "name": "sentinel-v2",
+  "version": "0.0.1",
+  "description": "SENTINEL V2.0 — Decentralized Threat Intelligence",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lit": "^3.2.0",
+    "playwright": "^1.59.1",
+    "three": "^0.183.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/three": "^0.183.1",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.5.0",
+    "vite": "^6.0.0"
+  }
+}

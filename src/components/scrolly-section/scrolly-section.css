@@ -1,0 +1,112 @@
+.scrolly-section {
+  position: relative;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+/* Sticky visual — stays in view during scroll */
+.scrolly-section__sticky {
+  position: sticky;
+  top: 48px;
+  height: calc(100vh - 48px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Background content visible through blur overlay */
+.scrolly-bg {
+  text-align: center;
+  padding: 48px;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.scrolly-bg__label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: #666666;
+  letter-spacing: 0.2em;
+  margin-bottom: 16px;
+}
+
+.scrolly-bg__number {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(80px, 14vw, 220px);
+  color: #ff2244;
+  letter-spacing: 0.04em;
+  line-height: 0.9;
+  text-shadow: 0 0 100px rgba(255,34,68,0.4);
+  font-variant-numeric: tabular-nums;
+  will-change: contents;
+}
+
+.scrolly-bg__subtitle {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: rgba(255,34,68,0.6);
+  letter-spacing: 0.2em;
+  margin-top: 8px;
+  margin-bottom: 40px;
+}
+
+.scrolly-bg__attacks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.scrolly-attack-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 70px 100px;
+  gap: 12px;
+  width: 100%;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  padding: 6px 12px;
+  border-left: 2px solid transparent;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s ease;
+  will-change: transform, opacity;
+}
+
+.scrolly-attack-row--visible {
+  opacity: 1;
+  transform: translateX(0);
+  border-left-color: rgba(255,34,68,0.4);
+}
+
+.scrolly-attack-row__hash { color: #444; }
+.scrolly-attack-row__type { color: #999; letter-spacing: 0.06em; }
+.scrolly-attack-row__amount { color: #ff2244; text-align: right; font-weight: 600; }
+.scrolly-attack-row__protocol { color: #666; text-align: right; }
+
+/* Tall spacer that creates scroll travel */
+.scrolly-section__spacer {
+  height: 380vh;
+}
+
+@media (max-width: 768px) {
+  .scrolly-bg { padding: 24px 16px; }
+  .scrolly-bg__subtitle { margin-bottom: 24px; }
+  .scrolly-bg__number { font-size: clamp(64px, 16vw, 140px); }
+  .scrolly-attack-row {
+    grid-template-columns: 1fr 60px;
+    font-size: 9px;
+    padding: 5px 8px;
+  }
+  .scrolly-attack-row__hash,
+  .scrolly-attack-row__protocol { display: none; }
+}
+
+@media (max-width: 480px) {
+  .scrolly-bg__label { font-size: 9px; letter-spacing: 0.15em; }
+  .scrolly-bg__number { font-size: clamp(48px, 14vw, 100px); }
+}

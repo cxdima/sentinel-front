@@ -1,0 +1,279 @@
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid #1a1a1a;
+  z-index: 100;
+  transition: border-color 300ms ease, background 300ms ease;
+}
+
+.navbar--scrolled {
+  border-bottom-color: #2a2a2a;
+  background: rgba(0, 0, 0, 0.96);
+}
+
+/* ── Scroll progress bar ─────────────────────────────────────────────── */
+.navbar__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  width: 100%;
+  background: #c8ff00;
+  transform-origin: left center;
+  transition: none;
+  box-shadow: 0 0 8px rgba(200, 255, 0, 0.4);
+}
+
+/* ── Logo ────────────────────────────────────────────────────────────── */
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__icon { flex-shrink: 0; }
+
+.navbar__wordmark {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: #c8ff00;
+  letter-spacing: 0.12em;
+  line-height: 1;
+}
+
+.navbar__version {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: #666666;
+  border: 1px solid #2a2a2a;
+  padding: 2px 6px;
+  letter-spacing: 0.1em;
+}
+
+/* ── Desktop links ───────────────────────────────────────────────────── */
+.navbar__links { display: flex; }
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #666666;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 200ms ease, border-color 200ms ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #c8ff00;
+  border-bottom-color: #c8ff00;
+}
+
+/* ── Right side ──────────────────────────────────────────────────────── */
+.navbar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar__dashboard-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  color: #000;
+  background: #c8ff00;
+  padding: 5px 12px;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.navbar__dashboard-btn:hover {
+  background: #fff;
+  box-shadow: 0 0 20px rgba(200,255,0,0.4);
+}
+
+/* ── Hamburger button ────────────────────────────────────────────────── */
+.navbar__hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid #2a2a2a;
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 0.2s ease;
+}
+
+.navbar__hamburger:hover {
+  border-color: #c8ff00;
+}
+
+.navbar__hamburger-line {
+  display: block;
+  width: 16px;
+  height: 1px;
+  background: #e8e8e8;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.2s ease;
+}
+
+.navbar--open .navbar__hamburger-line--1 {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.navbar--open .navbar__hamburger-line--2 {
+  opacity: 0;
+}
+
+.navbar--open .navbar__hamburger-line--3 {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* ── Mobile menu overlay ─────────────────────────────────────────────── */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.mobile-menu--open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-menu__panel {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(5, 5, 5, 0.98);
+  border-top: 1px solid #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+  overflow-y: auto;
+  transform: translateY(-20px);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-menu--open .mobile-menu__panel {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.mobile-menu__header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.mobile-menu__label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: #c8ff00;
+  letter-spacing: 0.2em;
+}
+
+.mobile-menu__code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: #333;
+  letter-spacing: 0.1em;
+}
+
+.mobile-menu__links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.mobile-menu__link {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 12px;
+  text-decoration: none;
+  border-left: 2px solid #1a1a1a;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.mobile-menu__link:hover,
+.mobile-menu__link:active {
+  border-left-color: #c8ff00;
+  background: rgba(200, 255, 0, 0.03);
+}
+
+.mobile-menu__link-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: #333;
+  letter-spacing: 0.15em;
+  min-width: 24px;
+}
+
+.mobile-menu__link-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  color: #e8e8e8;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.mobile-menu__link:hover .mobile-menu__link-text {
+  color: #c8ff00;
+}
+
+.mobile-menu__footer {
+  padding-top: 24px;
+  border-top: 1px solid #1a1a1a;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .navbar__links { display: none; }
+  .navbar__hamburger { display: flex; }
+  .mobile-menu { display: block; }
+  .navbar__dashboard-btn svg { display: block; }
+  .navbar__dashboard-btn { padding: 5px 10px; font-size: 8px; }
+}
+
+@media (max-width: 480px) {
+  .navbar { padding: 0 16px; }
+  .navbar__dashboard-btn span,
+  .navbar__dashboard-btn svg + svg { display: none; }
+}
