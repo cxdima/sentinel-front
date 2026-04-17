@@ -2,9 +2,9 @@ import { LitElement, html } from 'lit'
 import { customElement } from 'lit/decorators.js'
 import './webgl-bg.css'
 
-const NODE_COUNT = 80
-const CONNECTION_DISTANCE = 120
-const ATTACK_PARTICLE_COUNT = 6
+const NODE_COUNT = 28
+const CONNECTION_DISTANCE = 110
+const ATTACK_PARTICLE_COUNT = 3
 
 interface Particle {
   x: number
@@ -28,42 +28,64 @@ export class WebglBg extends LitElement {
   private scrollY = 0
   private width = 0
   private height = 0
-  private mouseX = 0
-  private mouseY = 0
+  private mouseX = -9999
+  private mouseY = -9999
   private dpr = 1
+  private running = false
+  private reducedMotion = false
 
   override firstUpdated() {
     this.canvas = this.querySelector<HTMLCanvasElement>('.webgl-canvas')
     if (!this.canvas) return
 
-    this.ctx = this.canvas.getContext('2d')
+    this.ctx = this.canvas.getContext('2d', { alpha: true })
     if (!this.ctx) return
 
-    this.dpr = Math.min(window.devicePixelRatio, 2)
+    this.dpr = Math.min(window.devicePixelRatio || 1, 1.5)
+    this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     this.resize()
     this.initParticles()
 
     window.addEventListener('resize', this.resize, { passive: true })
     window.addEventListener('scroll', this.onScroll, { passive: true })
     window.addEventListener('mousemove', this.onMouse, { passive: true })
+    document.addEventListener('visibilitychange', this.onVisibilityChange)
 
-    this.tick()
+    if (!this.reducedMotion && !document.hidden) this.start()
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback()
-    cancelAnimationFrame(this.frameId)
+    this.stop()
     window.removeEventListener('resize', this.resize)
     window.removeEventListener('scroll', this.onScroll)
     window.removeEventListener('mousemove', this.onMouse)
+    document.removeEventListener('visibilitychange', this.onVisibilityChange)
+  }
+
+  private start() {
+    if (this.running) return
+    this.running = true
+    this.frameId = requestAnimationFrame(this.tick)
+  }
+
+  private stop() {
+    this.running = false
+    cancelAnimationFrame(this.frameId)
+    this.frameId = 0
+  }
+
+  private readonly onVisibilityChange = () => {
+    if (document.hidden) this.stop()
+    else if (!this.reducedMotion) this.start()
   }
 
   private readonly resize = () => {
     if (!this.canvas) return
     this.width = window.innerWidth
     this.height = window.innerHeight
-    this.canvas.width = this.width * this.dpr
-    this.canvas.height = this.height * this.dpr
+    this.canvas.width = Math.floor(this.width * this.dpr)
+    this.canvas.height = Math.floor(this.height * this.dpr)
     this.canvas.style.width = this.width + 'px'
     this.canvas.style.height = this.height + 'px'
   }
@@ -94,9 +116,14 @@ export class WebglBg extends LitElement {
     }
   }
 
-  private tick = () => {
-    if (!this.ctx || !this.canvas) return
+  private frameSkip = 0
+
+  private readonly tick = () => {
+    if (!this.running || !this.ctx || !this.canvas) return
     this.frameId = requestAnimationFrame(this.tick)
+
+    this.frameSkip = (this.frameSkip + 1) % 2
+    if (this.frameSkip !== 0) return
 
     const ctx = this.ctx
     const w = this.width
@@ -106,17 +133,17 @@ export class WebglBg extends LitElement {
     ctx.scale(this.dpr, this.dpr)
     ctx.clearRect(0, 0, w, h)
 
-    // Scroll-based vertical offset for parallax
     const scrollOffset = this.scrollY * 0.15
     const time = performance.now() * 0.001
+    const mx = this.mouseX
+    const my = this.mouseY
+    const mouseActive = mx > -1000
 
-    // Update particles
     for (const p of this.particles) {
       p.x += p.vx
       p.y += p.vy + scrollOffset * 0.001
       p.z += p.vz
 
-      // Wrap around edges
       if (p.x < -20) p.x = w + 20
       if (p.x > w + 20) p.x = -20
       if (p.y < -20) p.y = h + 20
@@ -124,22 +151,24 @@ export class WebglBg extends LitElement {
       if (p.z < 0) p.z = 400
       if (p.z > 400) p.z = 0
 
-      // Subtle mouse repulsion
-      const dx = p.x - this.mouseX
-      const dy = p.y - this.mouseY
-      const dist = Math.sqrt(dx * dx + dy * dy)
-      if (dist < 200 && dist > 0) {
-        const force = (200 - dist) / 200 * 0.02
-        p.vx += (dx / dist) * force
-        p.vy += (dy / dist) * force
+      if (mouseActive) {
+        const dx = p.x - mx
+        const dy = p.y - my
+        const distSq = dx * dx + dy * dy
+        if (distSq < 40000 && distSq > 0) {
+          const dist = Math.sqrt(distSq)
+          const force = (200 - dist) / 200 * 0.02
+          p.vx += (dx / dist) * force
+          p.vy += (dy / dist) * force
+        }
       }
 
-      // Dampen velocity
       p.vx *= 0.999
       p.vy *= 0.999
     }
 
-    // Draw connections
+    const connDistSq = CONNECTION_DISTANCE * CONNECTION_DISTANCE
+    ctx.lineWidth = 0.5
     for (let i = 0; i < this.particles.length; i++) {
       const a = this.particles[i]
       const depthA = 1 - a.z / 500
@@ -148,9 +177,10 @@ export class WebglBg extends LitElement {
         const b = this.particles[j]
         const ddx = a.x - b.x
         const ddy = a.y - b.y
-        const dd = Math.sqrt(ddx * ddx + ddy * ddy)
+        const ddSq = ddx * ddx + ddy * ddy
 
-        if (dd < CONNECTION_DISTANCE) {
+        if (ddSq < connDistSq) {
+          const dd = Math.sqrt(ddSq)
           const depthB = 1 - b.z / 500
           const alpha = (1 - dd / CONNECTION_DISTANCE) * 0.12 * depthA * depthB
 
@@ -160,7 +190,6 @@ export class WebglBg extends LitElement {
             ctx.strokeStyle = `rgba(200, 255, 0, ${alpha})`
           }
 
-          ctx.lineWidth = 0.5
           ctx.beginPath()
           ctx.moveTo(a.x, a.y)
           ctx.lineTo(b.x, b.y)
@@ -169,52 +198,39 @@ export class WebglBg extends LitElement {
       }
     }
 
-    // Draw particles
     for (const p of this.particles) {
       const depth = 1 - p.z / 500
       const size = p.size * depth
 
       if (p.isAttack) {
-        // Red attack nodes — pulse
         const pulse = 0.5 + Math.sin(time * 3 + p.x * 0.01) * 0.3
         ctx.fillStyle = `rgba(255, 34, 68, ${(0.6 + pulse * 0.4) * depth})`
-
-        // Glow
-        ctx.shadowColor = 'rgba(255, 34, 68, 0.4)'
-        ctx.shadowBlur = 8
       } else {
         ctx.fillStyle = `rgba(200, 255, 0, ${0.4 * depth})`
-        ctx.shadowColor = 'rgba(200, 255, 0, 0.15)'
-        ctx.shadowBlur = 4
       }
 
       ctx.beginPath()
       ctx.arc(p.x, p.y, size, 0, Math.PI * 2)
       ctx.fill()
-      ctx.shadowBlur = 0
     }
 
-    // Draw traveling data pulses along some connections
-    const pulseCount = 8
+    const pulseCount = 6
     for (let i = 0; i < pulseCount; i++) {
       const idx = (Math.floor(time * 0.5 + i * 7) % this.particles.length)
       const nextIdx = (idx + 1 + i * 3) % this.particles.length
       const a = this.particles[idx]
       const b = this.particles[nextIdx]
-      const dd = Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2)
+      const dd = (a.x - b.x) ** 2 + (a.y - b.y) ** 2
 
-      if (dd < CONNECTION_DISTANCE * 1.5) {
+      if (dd < connDistSq * 2.25) {
         const t = ((time * (0.8 + i * 0.1) + i) % 1)
         const px = a.x + (b.x - a.x) * t
         const py = a.y + (b.y - a.y) * t
 
         ctx.fillStyle = a.isAttack ? 'rgba(255, 34, 68, 0.8)' : 'rgba(200, 255, 0, 0.7)'
-        ctx.shadowColor = a.isAttack ? 'rgba(255, 34, 68, 0.5)' : 'rgba(200, 255, 0, 0.4)'
-        ctx.shadowBlur = 6
         ctx.beginPath()
         ctx.arc(px, py, 1.5, 0, Math.PI * 2)
         ctx.fill()
-        ctx.shadowBlur = 0
       }
     }
 

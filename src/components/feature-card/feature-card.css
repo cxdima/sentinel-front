@@ -5,7 +5,7 @@ feature-card { display: flex; }
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 36px 28px;
+  padding: 24px 24px;
   transition:
     background 200ms ease,
     border-color 200ms ease;
@@ -20,13 +20,13 @@ feature-card { display: flex; }
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .feature-card__num {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 11px;
-  color: #666666;
+  color: #b8b8b8;
   letter-spacing: 0.15em;
 }
 
@@ -37,19 +37,19 @@ feature-card { display: flex; }
 
 .feature-card__title {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 40px;
+  font-size: 32px;
   color: #e8e8e8;
   letter-spacing: 0.06em;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   line-height: 1;
 }
 
 .feature-card__body {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 13px;
-  color: #999999;
-  line-height: 1.8;
-  margin-bottom: 24px;
+  color: #c4c4c4;
+  line-height: 1.6;
+  margin-bottom: 16px;
   flex: 1;
 }
 

@@ -1,11 +1,17 @@
 .blur-overlay {
   position: fixed;
   bottom: 0; left: 0; right: 0;
-  height: 0;
+  height: 52vh;
   z-index: 80;
   overflow: hidden;
-  will-change: height, transform, opacity;
-  transition: none;
+  transform: translateY(100%);
+  will-change: transform;
+  contain: layout paint;
+  pointer-events: none;
+}
+
+.blur-overlay--visible {
+  pointer-events: auto;
 }
 
 .blur-overlay__border {
@@ -19,14 +25,14 @@
 .blur-overlay__backdrop {
   position: absolute;
   inset: 0;
-  backdrop-filter: blur(60px) saturate(1.4) brightness(0.7);
-  -webkit-backdrop-filter: blur(60px) saturate(1.4) brightness(0.7);
-  background: linear-gradient(
-    170deg,
-    rgba(4, 4, 8, 0.82) 0%,
-    rgba(2, 2, 6, 0.88) 50%,
-    rgba(4, 6, 4, 0.82) 100%
-  );
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 18%),
+    linear-gradient(
+      170deg,
+      rgba(4, 4, 8, 0.985) 0%,
+      rgba(2, 2, 6, 0.99) 50%,
+      rgba(4, 6, 4, 0.985) 100%
+    );
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -89,10 +95,6 @@
   letter-spacing: 0.04em;
   line-height: 1.1;
   margin-bottom: 24px;
-  text-shadow:
-    0 0 20px rgba(0, 0, 0, 0.9),
-    0 0 60px rgba(0, 0, 0, 0.6),
-    0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 /* Stats grid in blur overlay */
@@ -113,7 +115,6 @@
   font-size: clamp(28px, 3vw, 48px);
   color: #ffffff;
   letter-spacing: 0.06em;
-  text-shadow: 0 0 16px rgba(0, 0, 0, 0.8);
 }
 
 .blur-stat__val--accent { color: #c8ff00; }
@@ -124,7 +125,6 @@
   color: #cccccc;
   letter-spacing: 0.12em;
   margin-top: 4px;
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
 }
 
 /* Rows layout */
@@ -155,7 +155,6 @@
   font-size: 13px;
   color: #dddddd;
   line-height: 1.6;
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
 }
 
 @media (max-width: 480px) {

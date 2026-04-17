@@ -9,7 +9,7 @@
   height: calc(100vh - 48px);
   display: flex;
   align-items: flex-start;
-  padding: clamp(32px, 4vh, 64px) 48px 0;
+  padding: clamp(16px, 3vh, 40px) 48px 0;
   overflow: hidden;
 }
 
@@ -42,7 +42,7 @@
     flex: 1;
     background: linear-gradient(to right, transparent, #2a2a2a, transparent);
   }
-  .tl-compare__sticky { padding: 0 20px; }
+  .tl-compare__sticky { padding: clamp(12px, 2vh, 24px) 20px 0; }
 }
 
 @media (max-width: 480px) {
@@ -128,8 +128,8 @@
 
 .tl-step__time {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
-  color: #444;
+  font-size: 10px;
+  color: #b0b0b0;
   letter-spacing: 0.1em;
   margin-top: 2px;
 }
@@ -152,15 +152,15 @@
 
 .tl-compare__result-val {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 36px;
+  font-size: 28px;
   letter-spacing: 0.04em;
   line-height: 1;
 }
 
 .tl-compare__result-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 8px;
-  color: #444;
+  font-size: 10px;
+  color: #b0b0b0;
   letter-spacing: 0.15em;
   margin-top: 6px;
 }
@@ -171,26 +171,26 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding-top: 40px;
+  padding-top: 20px;
 }
 
 .tl-compare__divider-line {
   width: 1px;
-  height: 80px;
+  height: 50px;
   background: linear-gradient(to bottom, transparent, #2a2a2a, transparent);
 }
 
 .tl-compare__divider-label {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 20px;
-  color: #444;
+  color: #a8a8a8;
   letter-spacing: 0.1em;
 }
 
 /* ── Delta banner ─────────────────────────────────────────────────────── */
 .tl-compare__delta {
-  margin-top: 20px;
-  padding: 20px 32px;
+  margin-top: 10px;
+  padding: 12px 24px;
   border: 1px solid rgba(200,255,0,0.2);
   background: rgba(200,255,0,0.03);
   text-align: center;
@@ -214,7 +214,7 @@
 
 .tl-compare__delta-value {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(48px, 6vw, 80px);
+  font-size: clamp(32px, 4vw, 52px);
   color: #c8ff00;
   letter-spacing: 0.04em;
   line-height: 1;
@@ -223,8 +223,8 @@
 
 .tl-compare__delta-proof {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
-  color: #444;
+  font-size: 10px;
+  color: #b0b0b0;
   letter-spacing: 0.12em;
   margin-top: 12px;
 }

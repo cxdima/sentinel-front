@@ -11,11 +11,22 @@ export class NavBar extends LitElement {
   @state() private menuOpen = false
   @state() private scrollProgress = 0
 
-  private readonly onScroll = () => {
-    this.scrolled = window.scrollY > 10
+  private ticking = false
 
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight
-    this.scrollProgress = docHeight > 0 ? Math.min(1, window.scrollY / docHeight) : 0
+  private readonly onScroll = () => {
+    if (this.ticking) return
+    this.ticking = true
+    requestAnimationFrame(() => {
+      const y = window.scrollY
+      const nextScrolled = y > 10
+      if (nextScrolled !== this.scrolled) this.scrolled = nextScrolled
+
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      const next = docHeight > 0 ? Math.min(1, y / docHeight) : 0
+      if (Math.abs(next - this.scrollProgress) > 0.002) this.scrollProgress = next
+
+      this.ticking = false
+    })
   }
 
   private readonly onHash = () => {

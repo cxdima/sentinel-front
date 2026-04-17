@@ -1,34 +1,48 @@
 import { LitElement, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
-import { scrollProgress, subRange } from '../../utils/scroll'
+import { scrollProgress, subRange, observeViewport } from '../../utils/scroll'
 import './blur-overlay.css'
 
 @customElement('blur-overlay')
 export class BlurOverlay extends LitElement {
   override createRenderRoot() { return this }
 
-  @state() private heightVh = 0
+  @state() private revealPct = 100
   @state() private phaseIdx = 0
-  @state() private slideUp = 0
+  @state() private slideOutPct = 0
 
   private triggerEl: HTMLElement | null = null
   private ticking = false
+  private inView = false
+  private disposeObserver: (() => void) | null = null
 
   override connectedCallback() {
     super.connectedCallback()
     requestAnimationFrame(() => {
       this.triggerEl = document.getElementById('problem')
       window.addEventListener('scroll', this.onScroll, { passive: true })
+      if (this.triggerEl) {
+        this.disposeObserver = observeViewport(this.triggerEl, inView => {
+          this.inView = inView
+          if (inView) this.onScroll()
+          else if (this.revealPct !== 100) {
+            this.revealPct = 100
+            this.slideOutPct = 0
+          }
+        })
+      }
     })
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback()
     window.removeEventListener('scroll', this.onScroll)
+    this.disposeObserver?.()
+    this.disposeObserver = null
   }
 
   private readonly onScroll = () => {
-    if (this.ticking) return
+    if (!this.inView || this.ticking) return
     this.ticking = true
     requestAnimationFrame(() => {
       this.updateScroll()
@@ -44,51 +58,51 @@ export class BlurOverlay extends LitElement {
     const scrolled = -rect.top
 
     if (scrolled < 0) {
-      this.heightVh = 0
-      this.slideUp = 0
+      if (this.revealPct !== 100) this.revealPct = 100
+      if (this.slideOutPct !== 0) this.slideOutPct = 0
       return
     }
 
     const p = scrollProgress(section)
 
-    // Phase 1: Rise from bottom (0 → 52vh)
+    let nextReveal = 100
+    let nextSlideOut = 0
+    let nextPhase = 0
+
     if (p < 0.12) {
-      this.heightVh = subRange(p, 0, 0.12) * 52
-      this.slideUp = 0
-      this.phaseIdx = 0
+      nextReveal = Math.round(100 - subRange(p, 0, 0.12) * 100)
+      nextPhase = 0
+    } else if (p < 0.35) {
+      nextReveal = 0
+      nextPhase = 0
+    } else if (p < 0.55) {
+      nextReveal = 0
+      nextPhase = 1
+    } else if (p < 0.75) {
+      nextReveal = 0
+      nextPhase = 2
+    } else {
+      nextReveal = 0
+      nextSlideOut = Math.round(subRange(p, 0.75, 1) * 100)
+      nextPhase = 2
     }
-    // Phase 2: Linger at 52vh, cycle through content phases
-    else if (p < 0.35) {
-      this.heightVh = 52
-      this.slideUp = 0
-      this.phaseIdx = 0
-    }
-    else if (p < 0.55) {
-      this.heightVh = 52
-      this.slideUp = 0
-      this.phaseIdx = 1
-    }
-    else if (p < 0.75) {
-      this.heightVh = 52
-      this.slideUp = 0
-      this.phaseIdx = 2
-    }
-    // Phase 3: Instead of closing, slide the entire panel upward off screen
-    else {
-      this.heightVh = 52
-      this.slideUp = subRange(p, 0.75, 1) * 100
-      this.phaseIdx = 2
-    }
+
+    if (nextReveal !== this.revealPct) this.revealPct = nextReveal
+    if (nextSlideOut !== this.slideOutPct) this.slideOutPct = nextSlideOut
+    if (nextPhase !== this.phaseIdx) this.phaseIdx = nextPhase
   }
 
   override render() {
-    const translateStyle = this.slideUp > 0
-      ? `height: ${this.heightVh}vh; transform: translateY(-${this.slideUp}vh); opacity: ${1 - this.slideUp / 100}`
-      : `height: ${this.heightVh}vh`
+    // Combined transform: reveal from bottom (0..100%) + slide-out upwards (0..100%).
+    // Total translateY in % of element height: revealPct (hides) + slideOutPct (slides away upward).
+    const totalY = this.revealPct - this.slideOutPct
+    const opacity = this.slideOutPct > 0 ? 1 - this.slideOutPct / 100 : 1
+    const translateStyle = `transform: translateY(${totalY}%); opacity: ${opacity}`
+    const visibleClass = this.revealPct < 100 ? 'blur-overlay blur-overlay--visible' : 'blur-overlay'
 
     return html`
       <div
-        class="blur-overlay"
+        class=${visibleClass}
         style=${translateStyle}
         aria-hidden="true"
       >

@@ -17,74 +17,156 @@ export function animateCount(
 
 const DECODE_CHARS = '▓▒░█▄▀■□▪▫◊◆◇○●ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*<>{}[]~'
 
+function randomChar(set: string): string {
+  return set[Math.floor(Math.random() * set.length)]
+}
+
+interface CharSpans {
+  spans: HTMLSpanElement[]
+  resolved: boolean[]
+}
+
 /**
- * Per-character decode animation: each letter cycles through
- * random characters before resolving to the final letter.
- * Staggered left-to-right with intentional slowness for drama.
+ * Build per-character spans inside the element, one span per char.
+ * Whitespace characters are preserved as plain text nodes (not animated).
  */
-export function decodeText(el: HTMLElement, duration = 2800): void {
+function buildCharSpans(el: HTMLElement, finalText: string): CharSpans {
+  el.textContent = ''
+  const spans: HTMLSpanElement[] = []
+  const resolved: boolean[] = []
+
+  for (let i = 0; i < finalText.length; i++) {
+    const ch = finalText[i]
+    if (ch === ' ' || ch === '\n' || ch === '\t') {
+      el.appendChild(document.createTextNode(ch))
+      continue
+    }
+    const span = document.createElement('span')
+    span.className = 'char char--scrambling'
+    span.textContent = ch
+    el.appendChild(span)
+    spans.push(span)
+    resolved.push(false)
+  }
+
+  return { spans, resolved }
+}
+
+/**
+ * Decode-style scramble: each char cycles through random glyphs before
+ * resolving to the target char. While scrambling, char is green; once
+ * resolved, it fades to white. Uses per-character <span> elements.
+ */
+export function decodeText(el: HTMLElement, duration = 2800, charSet = DECODE_CHARS): void {
   const finalText = el.textContent ?? ''
   if (!finalText.trim()) return
 
-  const len = finalText.length
-  const frameInterval = 70 // slower frames for visible scramble
+  const frameInterval = 70
   const totalFrames = Math.ceil(duration / frameInterval)
 
-  el.classList.add('decoding')
+  // Map final-text char index (including whitespace) → span index
+  const spanIndex: number[] = []
+  let sIdx = 0
+  for (let i = 0; i < finalText.length; i++) {
+    const ch = finalText[i]
+    if (ch === ' ' || ch === '\n' || ch === '\t') {
+      spanIndex.push(-1)
+    } else {
+      spanIndex.push(sIdx++)
+    }
+  }
 
-  // Each character resolves at a different frame, creating a wave
-  const resolveFrames = finalText.split('').map((_, i) => {
-    const progress = i / Math.max(len - 1, 1)
-    // Spread resolution over 80% of the duration for a long wave effect
-    const baseFrame = Math.floor(progress * totalFrames * 0.8)
-    return baseFrame + Math.floor(Math.random() * 6)
-  })
+  const { spans, resolved } = buildCharSpans(el, finalText)
+
+  // Pre-compute resolve frame per animated character
+  const animatedCount = spans.length
+  const resolveFrames = new Array<number>(animatedCount)
+  for (let i = 0; i < animatedCount; i++) {
+    const progress = i / Math.max(animatedCount - 1, 1)
+    resolveFrames[i] = Math.floor(progress * totalFrames * 0.8) + Math.floor(Math.random() * 6)
+  }
 
   let frame = 0
   const interval = setInterval(() => {
-    el.textContent = finalText
-      .split('')
-      .map((char, i) => {
-        if (char === ' ' || char === '\n') return char
-        if (frame >= resolveFrames[i]) return char
-        return DECODE_CHARS[Math.floor(Math.random() * DECODE_CHARS.length)]
-      })
-      .join('')
+    for (let i = 0; i < finalText.length; i++) {
+      const idx = spanIndex[i]
+      if (idx < 0) continue
+      const span = spans[idx]
+      if (frame >= resolveFrames[idx]) {
+        if (!resolved[idx]) {
+          span.textContent = finalText[i]
+          span.className = 'char char--resolved'
+          resolved[idx] = true
+        }
+      } else {
+        span.textContent = randomChar(charSet)
+      }
+    }
 
     frame++
     if (frame >= totalFrames) {
-      el.textContent = finalText
-      el.classList.remove('decoding')
+      for (let i = 0; i < finalText.length; i++) {
+        const idx = spanIndex[i]
+        if (idx < 0) continue
+        spans[idx].textContent = finalText[i]
+        spans[idx].className = 'char char--resolved'
+      }
       clearInterval(interval)
     }
   }, frameInterval)
 }
 
-/** Text scramble reveal effect — slower, more dramatic */
-export function scramble(el: HTMLElement, finalText: string, duration = 2400): Promise<void> {
+/** Text scramble reveal — same per-character approach, faster frame rate. */
+export function scramble(el: HTMLElement, finalText: string, duration = 2400, charSet = DECODE_CHARS): Promise<void> {
   return new Promise(resolve => {
-    const len         = finalText.length
-    const frameRate   = 30 // ms per frame — slower for visibility
+    const frameRate = 30
     const totalFrames = Math.round(duration / frameRate)
-    let frame         = 0
 
-    el.classList.add('decoding')
+    const spanIndex: number[] = []
+    let sIdx = 0
+    for (let i = 0; i < finalText.length; i++) {
+      const ch = finalText[i]
+      if (ch === ' ' || ch === '\n' || ch === '\t') {
+        spanIndex.push(-1)
+      } else {
+        spanIndex.push(sIdx++)
+      }
+    }
 
+    const { spans, resolved } = buildCharSpans(el, finalText)
+    const animatedCount = spans.length
+
+    const resolveFrames = new Array<number>(animatedCount)
+    for (let i = 0; i < animatedCount; i++) {
+      const progress = i / Math.max(animatedCount - 1, 1)
+      resolveFrames[i] = Math.floor(progress * totalFrames * 0.65)
+    }
+
+    let frame = 0
     const interval = setInterval(() => {
-      el.textContent = finalText
-        .split('')
-        .map((char, i) => {
-          if (char === ' ') return ' '
-          // Characters resolve in a wave from left to right
-          const resolveAt = Math.floor((i / len) * totalFrames * 0.65)
-          return frame > resolveAt ? char : DECODE_CHARS[Math.floor(Math.random() * DECODE_CHARS.length)]
-        })
-        .join('')
+      for (let i = 0; i < finalText.length; i++) {
+        const idx = spanIndex[i]
+        if (idx < 0) continue
+        const span = spans[idx]
+        if (frame > resolveFrames[idx]) {
+          if (!resolved[idx]) {
+            span.textContent = finalText[i]
+            span.className = 'char char--resolved'
+            resolved[idx] = true
+          }
+        } else {
+          span.textContent = randomChar(charSet)
+        }
+      }
 
       frame++
       if (frame >= totalFrames) {
-        el.textContent = finalText
-        el.classList.remove('decoding')
+        for (let i = 0; i < finalText.length; i++) {
+          const idx = spanIndex[i]
+          if (idx < 0) continue
+          spans[idx].textContent = finalText[i]
+          spans[idx].className = 'char char--resolved'
+        }
         clearInterval(interval)
         resolve()
       }

@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
-import { scrollProgress } from '../../utils/scroll'
+import { scrollProgress, observeViewport } from '../../utils/scroll'
 import './timeline-compare.css'
 
 const WITHOUT_STEPS = [
@@ -27,14 +27,17 @@ export class TimelineCompare extends LitElement {
 
   @state() private progress = 0
   private ticking = false
+  private inView = false
+  private disposeObserver: (() => void) | null = null
 
   private readonly onScroll = () => {
-    if (this.ticking) return
+    if (!this.inView || this.ticking) return
     this.ticking = true
     requestAnimationFrame(() => {
       const section = this.querySelector<HTMLElement>('.tl-compare')
       if (section) {
-        this.progress = scrollProgress(section)
+        const next = scrollProgress(section)
+        if (Math.abs(next - this.progress) > 0.001) this.progress = next
       }
       this.ticking = false
     })
@@ -43,11 +46,17 @@ export class TimelineCompare extends LitElement {
   override connectedCallback() {
     super.connectedCallback()
     window.addEventListener('scroll', this.onScroll, { passive: true })
+    this.disposeObserver = observeViewport(this, inView => {
+      this.inView = inView
+      if (inView) this.onScroll()
+    })
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback()
     window.removeEventListener('scroll', this.onScroll)
+    this.disposeObserver?.()
+    this.disposeObserver = null
   }
 
   private renderTimeline(steps: typeof WITHOUT_STEPS, fromRight = false) {
@@ -79,7 +88,7 @@ export class TimelineCompare extends LitElement {
         <div class="tl-compare__sticky">
           <span class="section-num" aria-hidden="true">03 / 08</span>
           <div class="tl-compare__content">
-            <header class="section__header" style="margin-bottom: 24px">
+            <header class="section__header" style="margin-bottom: 16px">
               <h2 id="compare-heading" class="section__label">TWO REALITIES</h2>
               <span class="section__code">// SAME ATTACK · DIFFERENT OUTCOMES</span>
             </header>

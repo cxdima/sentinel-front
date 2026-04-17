@@ -1,6 +1,7 @@
 import { LitElement, html, svg } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 import { animateCount, scramble, onVisible } from '../../utils/animation'
+import { observeViewport } from '../../utils/scroll'
 import './hero-section.css'
 
 const GRAPH_NODES = [
@@ -23,19 +24,22 @@ export class HeroSection extends LitElement {
   override createRenderRoot() { return this }
 
   @state() private revealed = false
+  @state() private inView = false
+
+  private statsTimer: ReturnType<typeof setTimeout> | null = null
+  private disposeObserver: (() => void) | null = null
 
   override firstUpdated() {
     onVisible(this as unknown as HTMLElement, () => {
       this.revealed = true
 
-      // Scramble the subtitle
       const subtitleEl = this.querySelector<HTMLElement>('.hero__subtitle')
       if (subtitleEl) {
         scramble(subtitleEl, subtitleEl.dataset.text ?? subtitleEl.textContent ?? '', 3000)
       }
 
-      // Animate stats with delay
-      setTimeout(() => {
+      this.statsTimer = setTimeout(() => {
+        this.statsTimer = null
         const capitalEl = this.querySelector<HTMLElement>('#stat-capital')
         const threatsEl = this.querySelector<HTMLElement>('#stat-threats')
         const responseEl = this.querySelector<HTMLElement>('#stat-response')
@@ -44,9 +48,24 @@ export class HeroSection extends LitElement {
         if (responseEl) animateCount(responseEl, 340, 1400, v => `${v}ms`)
       }, 800)
     })
+
+    this.disposeObserver = observeViewport(this, inView => {
+      if (inView !== this.inView) this.inView = inView
+    })
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback()
+    if (this.statsTimer !== null) {
+      clearTimeout(this.statsTimer)
+      this.statsTimer = null
+    }
+    this.disposeObserver?.()
+    this.disposeObserver = null
   }
 
   private renderGraph() {
+    const animate = this.inView
     return svg`
       <svg class="hero__graph-svg" viewBox="0 0 640 380" preserveAspectRatio="xMidYMid slice">
         <defs>
@@ -69,7 +88,7 @@ export class HeroSection extends LitElement {
             <line class="hg-edge" x1=${n1.x} y1=${n1.y} x2=${n2.x} y2=${n2.y}/>
           `
         })}
-        ${GRAPH_EDGES.map(([a, b], i) => {
+        ${animate ? GRAPH_EDGES.map(([a, b], i) => {
           const n1 = GRAPH_NODES[a], n2 = GRAPH_NODES[b]
           const isAttack = a === 0 || b === 0
           return svg`
@@ -82,7 +101,7 @@ export class HeroSection extends LitElement {
               />
             </circle>
           `
-        })}
+        }) : ''}
         ${GRAPH_NODES.map(n => svg`
           <g>
             <circle cx=${n.x} cy=${n.y} r="16" fill="none" stroke=${n.color} stroke-width="0.5" opacity="0.2"/>

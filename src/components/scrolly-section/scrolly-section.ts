@@ -1,5 +1,6 @@
 import { LitElement, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
+import { observeViewport } from '../../utils/scroll'
 import './scrolly-section.css'
 
 const ATTACKS = [
@@ -19,9 +20,11 @@ export class ScrollySection extends LitElement {
   @state() private attackIdx = 0
 
   private ticking = false
+  private inView = false
+  private disposeObserver: (() => void) | null = null
 
   private readonly onScroll = () => {
-    if (this.ticking) return
+    if (!this.inView || this.ticking) return
     this.ticking = true
     requestAnimationFrame(() => {
       this.updateProgress()
@@ -35,6 +38,8 @@ export class ScrollySection extends LitElement {
 
     const rect     = section.getBoundingClientRect()
     const scrolled = -rect.top
+    if (rect.bottom < 0 || rect.top > window.innerHeight) return
+
     const total    = section.offsetHeight - window.innerHeight
     const progress = Math.max(0, Math.min(1, scrolled / total))
 
@@ -48,11 +53,17 @@ export class ScrollySection extends LitElement {
   override connectedCallback() {
     super.connectedCallback()
     window.addEventListener('scroll', this.onScroll, { passive: true })
+    this.disposeObserver = observeViewport(this, inView => {
+      this.inView = inView
+      if (inView) this.onScroll()
+    })
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback()
     window.removeEventListener('scroll', this.onScroll)
+    this.disposeObserver?.()
+    this.disposeObserver = null
   }
 
   override render() {

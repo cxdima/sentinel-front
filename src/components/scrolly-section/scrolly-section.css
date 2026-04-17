@@ -25,8 +25,8 @@
 
 .scrolly-bg__label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  color: #666666;
+  font-size: 12px;
+  color: #c4c4c4;
   letter-spacing: 0.2em;
   margin-bottom: 16px;
 }
@@ -37,9 +37,17 @@
   color: #ff2244;
   letter-spacing: 0.04em;
   line-height: 0.9;
-  text-shadow: 0 0 100px rgba(255,34,68,0.4);
   font-variant-numeric: tabular-nums;
-  will-change: contents;
+  position: relative;
+}
+
+.scrolly-bg__number::after {
+  content: '';
+  position: absolute;
+  inset: -40% -10%;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,34,68,0.18), transparent 70%);
+  z-index: -1;
+  pointer-events: none;
 }
 
 .scrolly-bg__subtitle {
@@ -83,10 +91,10 @@
   border-left-color: rgba(255,34,68,0.4);
 }
 
-.scrolly-attack-row__hash { color: #444; }
-.scrolly-attack-row__type { color: #999; letter-spacing: 0.06em; }
-.scrolly-attack-row__amount { color: #ff2244; text-align: right; font-weight: 600; }
-.scrolly-attack-row__protocol { color: #666; text-align: right; }
+.scrolly-attack-row__hash { color: #9a9a9a; }
+.scrolly-attack-row__type { color: #d4d4d4; letter-spacing: 0.06em; }
+.scrolly-attack-row__amount { color: #ff5266; text-align: right; font-weight: 600; }
+.scrolly-attack-row__protocol { color: #b8b8b8; text-align: right; }
 
 /* Tall spacer that creates scroll travel */
 .scrolly-section__spacer {

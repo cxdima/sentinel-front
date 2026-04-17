@@ -1,51 +1,86 @@
 import { LitElement, html } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
-import { scrollProgress, subRange } from '../../utils/scroll'
+import { customElement } from 'lit/decorators.js'
+import { scrollProgress, subRange, observeViewport } from '../../utils/scroll'
 
 @customElement('how-section')
 export class HowSection extends LitElement {
   override createRenderRoot() { return this }
 
-  @state() private cardReveal = 0
   private ticking = false
+  private inView = false
+  private disposeObserver: (() => void) | null = null
+  private card1El: HTMLElement | null = null
+  private card2El: HTMLElement | null = null
+  private card3El: HTMLElement | null = null
+  private headerEl: HTMLElement | null = null
+  private sectionEl: HTMLElement | null = null
 
   private readonly onScroll = () => {
-    if (this.ticking) return
+    if (!this.inView || this.ticking) return
     this.ticking = true
     requestAnimationFrame(() => {
-      const section = this.querySelector<HTMLElement>('.how-scrolly')
-      if (section) {
-        this.cardReveal = scrollProgress(section)
-      }
       this.ticking = false
+      if (!this.sectionEl) return
+      const p = scrollProgress(this.sectionEl)
+      this.apply(p)
     })
+  }
+
+  private apply(p: number) {
+    const c1 = subRange(p, 0.05, 0.25)
+    const c2 = subRange(p, 0.25, 0.50)
+    const c3 = subRange(p, 0.50, 0.75)
+    const h  = subRange(p, 0.00, 0.15)
+    if (this.headerEl) {
+      this.headerEl.style.opacity = String(h)
+      this.headerEl.style.transform = `translateY(${(1 - h) * 40}px)`
+    }
+    if (this.card1El) {
+      this.card1El.style.opacity = String(c1)
+      this.card1El.style.transform = `translateX(${(1 - c1) * -80}px)`
+    }
+    if (this.card2El) {
+      this.card2El.style.opacity = String(c2)
+      this.card2El.style.transform = `translateY(${(1 - c2) * 60}px)`
+    }
+    if (this.card3El) {
+      this.card3El.style.opacity = String(c3)
+      this.card3El.style.transform = `translateX(${(1 - c3) * 80}px)`
+    }
+  }
+
+  override firstUpdated() {
+    this.sectionEl = this.querySelector<HTMLElement>('.how-scrolly')
+    this.headerEl  = this.querySelector<HTMLElement>('.how-scrolly__sticky .section__header')
+    this.card1El   = this.querySelector<HTMLElement>('[data-how-card="1"]')
+    this.card2El   = this.querySelector<HTMLElement>('[data-how-card="2"]')
+    this.card3El   = this.querySelector<HTMLElement>('[data-how-card="3"]')
+    this.apply(0)
   }
 
   override connectedCallback() {
     super.connectedCallback()
     window.addEventListener('scroll', this.onScroll, { passive: true })
+    this.disposeObserver = observeViewport(this, inView => {
+      this.inView = inView
+      if (inView) this.onScroll()
+    })
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback()
     window.removeEventListener('scroll', this.onScroll)
+    this.disposeObserver?.()
+    this.disposeObserver = null
   }
 
   override render() {
-    const card1In = subRange(this.cardReveal, 0.05, 0.25)
-    const card2In = subRange(this.cardReveal, 0.25, 0.50)
-    const card3In = subRange(this.cardReveal, 0.50, 0.75)
-    const headerIn = subRange(this.cardReveal, 0, 0.15)
-
     return html`
       <section class="how-scrolly" id="how" aria-labelledby="how-heading">
         <div class="how-scrolly__sticky">
           <span class="section-num" aria-hidden="true">02 / 08</span>
           <div class="how-scrolly__content">
-            <header
-              class="section__header"
-              style="opacity: ${headerIn}; transform: translateY(${(1 - headerIn) * 40}px)"
-            >
+            <header class="section__header" style="opacity:0; transform:translateY(40px)">
               <h2 id="how-heading" class="section__label" data-scramble="HOW IT WORKS">HOW IT WORKS</h2>
               <span class="section__code">// DETECT · RESPOND · PROVE</span>
             </header>
@@ -57,8 +92,7 @@ export class HowSection extends LitElement {
                   stroke-dashoffset="1200" opacity="0.3"/>
               </svg>
 
-              <!-- Card 1: slides in from left -->
-              <div style="opacity: ${card1In}; transform: translateX(${(1 - card1In) * -80}px)">
+              <div data-how-card="1" style="opacity:0; transform:translateX(-80px)">
                 <feature-card num="01" title="DETECT" icon="crosshair">
                   <span slot="body">Monitors every transaction in the mempool before it's mined. Flash loans, oracle manipulation, reentrancy — flagged in milliseconds, not minutes.</span>
                   <span slot="tags">
@@ -69,8 +103,7 @@ export class HowSection extends LitElement {
                 </feature-card>
               </div>
 
-              <!-- Card 2: slides in from bottom -->
-              <div style="opacity: ${card2In}; transform: translateY(${(1 - card2In) * 60}px)">
+              <div data-how-card="2" style="opacity:0; transform:translateY(60px)">
                 <feature-card num="02" title="RESPOND" icon="alert">
                   <span slot="body">Executes defense automatically on-chain — no human approval needed. Pauses contracts, caps withdrawals, or reroutes funds within the same block as the attack.</span>
                   <span slot="tags">
@@ -81,8 +114,7 @@ export class HowSection extends LitElement {
                 </feature-card>
               </div>
 
-              <!-- Card 3: slides in from right -->
-              <div style="opacity: ${card3In}; transform: translateX(${(1 - card3In) * 80}px)">
+              <div data-how-card="3" style="opacity:0; transform:translateX(80px)">
                 <feature-card num="03" title="PROVE" icon="check">
                   <span slot="body">Every action generates a zero-knowledge proof, verified on-chain. Shows exactly how much was saved by simulating what would have happened without defense.</span>
                   <span slot="tags">

@@ -1,12 +1,18 @@
 .compare-table-wrap {
-  overflow: visible;
+  overflow: hidden;
   will-change: transform, opacity;
 }
 
 .compare-table-scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
   padding-bottom: 2px;
+}
+
+@media (max-width: 768px) {
+  .compare-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* ── Callouts ──────────────────────────────────────────────────────────── */
@@ -85,4 +91,9 @@
   .compare-callout { padding: 20px 16px; }
   .compare-callout__title { font-size: 20px; }
   .compare-callout__body { font-size: 11px; }
+}
+
+/* Row entry transform anchored to the row to avoid horizontal overflow */
+.comp-table tbody tr {
+  will-change: transform, opacity;
 }

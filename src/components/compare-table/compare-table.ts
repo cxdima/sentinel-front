@@ -1,6 +1,6 @@
 import { LitElement, html } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
-import { scrollProgress, subRange } from '../../utils/scroll'
+import { scrollProgress, subRange, observeViewport } from '../../utils/scroll'
 import './compare-table.css'
 
 const ROWS = [
@@ -18,14 +18,17 @@ export class CompareTable extends LitElement {
 
   @state() private progress = 0
   private ticking = false
+  private inView = false
+  private disposeObserver: (() => void) | null = null
 
   private readonly onScroll = () => {
-    if (this.ticking) return
+    if (!this.inView || this.ticking) return
     this.ticking = true
     requestAnimationFrame(() => {
       const section = this.querySelector<HTMLElement>('.compare-scrolly')
       if (section) {
-        this.progress = scrollProgress(section)
+        const next = scrollProgress(section)
+        if (Math.abs(next - this.progress) > 0.001) this.progress = next
       }
       this.ticking = false
     })
@@ -34,11 +37,17 @@ export class CompareTable extends LitElement {
   override connectedCallback() {
     super.connectedCallback()
     window.addEventListener('scroll', this.onScroll, { passive: true })
+    this.disposeObserver = observeViewport(this, inView => {
+      this.inView = inView
+      if (inView) this.onScroll()
+    })
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback()
     window.removeEventListener('scroll', this.onScroll)
+    this.disposeObserver?.()
+    this.disposeObserver = null
   }
 
   override render() {
@@ -53,7 +62,7 @@ export class CompareTable extends LitElement {
           <div class="compare-scrolly__content">
             <header
               class="section__header"
-              style="opacity: ${headerIn}; transform: translateX(${(1 - headerIn) * -60}px)"
+              style="opacity: ${headerIn}; transform: translateY(${(1 - headerIn) * 20}px)"
             >
               <h2 id="vs-heading" class="section__label">VS EXISTING SOLUTIONS</h2>
               <span class="section__code">// WHY NOTHING ELSE DOES THIS</span>
@@ -61,7 +70,7 @@ export class CompareTable extends LitElement {
 
             <div
               class="compare-table-wrap"
-              style="opacity: ${tableIn}; transform: translateX(${(1 - tableIn) * 100}px)"
+              style="opacity: ${tableIn}; transform: translateY(${(1 - tableIn) * 40}px)"
             >
               <div class="compare-table-scroll">
                 <table class="comp-table" role="table">
@@ -78,7 +87,7 @@ export class CompareTable extends LitElement {
                     ${ROWS.map((r, i) => {
                       const rowIn = subRange(this.progress, 0.12 + i * 0.04, 0.22 + i * 0.04)
                       return html`
-                        <tr style="opacity: ${rowIn}; transform: translateX(${(1 - rowIn) * 40}px)">
+                        <tr style="opacity: ${rowIn}; transform: translateY(${(1 - rowIn) * 16}px)">
                           <td>${r.cap}</td>
                           <td>${r.def}</td>
                           <td>${r.forta}</td>
