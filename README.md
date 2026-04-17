@@ -41,5 +41,23 @@ docs/             # Protocol and design documentation
 
 ## Documentation
 
-Protocol and architecture docs live in [`docs/`](./docs). Start with
-[`docs/00_executive_overview.md`](./docs/00_executive_overview.md).
+- **Frontend maintainer's guide:** [`docs/13_landing_page_frontend.md`](./docs/13_landing_page_frontend.md)
+  — scroll model, reveal pipeline, section conventions, diagnostic scripts,
+  historical gotchas. **Read this before touching `src/utils/scroll.ts` or
+  the scroll-driven sections.**
+- **Changelog:** [`CHANGELOG.md`](./CHANGELOG.md).
+- **Protocol and architecture docs:** [`docs/`](./docs), starting with
+  [`docs/00_executive_overview.md`](./docs/00_executive_overview.md).
+
+## Diagnostic scripts
+
+`scripts/` contains Playwright-based smoke tests and screenshot harnesses
+for the landing page. The most useful one:
+
+```bash
+# scroll through all 8 sections, save screenshots to scripts/_shots/
+node scripts/shots.mjs
+```
+
+See [`docs/13_landing_page_frontend.md`](./docs/13_landing_page_frontend.md) §7
+for the full list.
