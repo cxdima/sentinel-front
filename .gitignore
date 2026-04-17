@@ -72,3 +72,17 @@ Desktop.ini
 .vercel
 .netlify
 .wrangler
+
+# ─── Diagnostic artifacts & scratch files ────────────────────────────────────
+scripts/_shots/
+/tmp-*.mjs
+/tmp-*.cjs
+/tmp-*.js
+/screenshot-check.cjs
+/screenshot-delta.cjs
+
+# ─── Generated JS from tsc (source is TypeScript) ────────────────────────────
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts
+!src/**/*.d.ts.keep
