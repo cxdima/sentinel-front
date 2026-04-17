@@ -10,8 +10,8 @@
   --color-chartreuse:       #c8ff00;
   --color-chartreuse-dim:   rgba(200, 255, 0, 0.09);
   --color-white:            #e8e8e8;
-  --color-white-dim:        #666666;
-  --color-white-muted:      #444444;
+  --color-white-dim:        #b0b0b0;
+  --color-white-muted:      #888888;
   --color-red:              #ff2244;
   --color-amber:            #d47d27;
   --color-green:            #36c88b;
@@ -74,10 +74,19 @@ body {
 }
 
 /* ── TEXT DECODE VISUAL FEEDBACK ──────────────────────────────────────── */
-.decoding {
-  color: #c8ff00 !important;
-  text-shadow: 0 0 8px rgba(200, 255, 0, 0.3);
-  transition: color 0.3s ease, text-shadow 0.3s ease;
+.char {
+  display: inline-block;
+  transition: color 260ms ease, text-shadow 260ms ease, filter 260ms ease;
+}
+
+.char--scrambling {
+  color: #c8ff00;
+  text-shadow: 0 0 6px rgba(200, 255, 0, 0.35);
+}
+
+.char--resolved {
+  color: inherit;
+  text-shadow: none;
 }
 
 /* ── SECTION LAYOUT ────────────────────────────────────────────────────── */
@@ -121,8 +130,8 @@ body {
 
 .section__code {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  color: #444444;
+  font-size: 11px;
+  color: #9a9a9a;
   letter-spacing: 0.15em;
 }
 
@@ -150,8 +159,9 @@ body {
   top: 48px;
   height: calc(100vh - 48px);
   display: flex;
-  align-items: flex-start;
-  padding: clamp(16px, 3vh, 40px) 48px 0;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 5vh, 56px) 48px clamp(24px, 5vh, 56px);
   overflow: hidden;
 }
 
@@ -179,7 +189,7 @@ body {
 
 .how-scrolly__spacer { height: 250vh; }
 .compare-scrolly__spacer { height: 300vh; }
-.imm-scrolly__spacer { height: 250vh; }
+.imm-scrolly__spacer { height: 340vh; }
 
 @media (max-width: 768px) {
   .how-scrolly__sticky,
@@ -229,16 +239,16 @@ body {
 
 .panel-label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
-  color: #666666;
+  font-size: 10px;
+  color: #b0b0b0;
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
 .panel-code {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 8px;
-  color: #444444;
+  font-size: 9px;
+  color: #8c8c8c;
   letter-spacing: 0.12em;
 }
 
@@ -309,6 +319,12 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
+  align-items: stretch;
+}
+
+.how-grid > div {
+  display: flex;
+  min-width: 0;
 }
 
 @media (max-width: 900px) {
@@ -318,9 +334,9 @@ body {
 /* ── DETAIL TAGS ───────────────────────────────────────────────────────── */
 .detail-tag {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 8px;
-  color: #888888;
-  border: 1px solid #333333;
+  font-size: 9px;
+  color: #b8b8b8;
+  border: 1px solid #444;
   padding: 3px 8px;
   letter-spacing: 0.1em;
 }
@@ -357,8 +373,8 @@ body {
 
 .cta-section__label {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
-  color: #444444;
+  font-size: 10px;
+  color: #c8ff00;
   letter-spacing: 0.2em;
   margin-bottom: 16px;
 }
@@ -374,8 +390,8 @@ body {
 
 .cta-section__body {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 13px;
-  color: #666666;
+  font-size: 14px;
+  color: #c4c4c4;
   line-height: 1.8;
   margin-bottom: 32px;
 }
@@ -403,8 +419,8 @@ body {
 
 .cta-stat__key {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 8px;
-  color: #444;
+  font-size: 9px;
+  color: #a8a8a8;
   letter-spacing: 0.15em;
   margin-top: 6px;
 }
@@ -466,18 +482,18 @@ body {
   color: #e8e8e8;
 }
 
-.comp-table th:first-child { color: #666; font-size: 16px; }
+.comp-table th:first-child { color: #b0b0b0; font-size: 16px; }
 .comp-table th.comp-table__sentinel { color: #c8ff00; }
 
 .comp-table td {
   padding: 10px 14px;
   border-bottom: 1px solid #111;
-  color: #777;
+  color: #c0c0c0;
   vertical-align: top;
 }
 
 .comp-table td:first-child {
-  color: #999;
+  color: #d8d8d8;
   font-size: 12px;
   letter-spacing: 0.1em;
 }
@@ -526,18 +542,23 @@ body::after {
 }
 
 /* ── SECTION NUMBER INDICATOR ────────────────────────────────────────── */
+/* Minimal, transparent — no background so it can never cover underlying text. */
 .section-num {
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  color: rgba(200,255,0,0.3);
-  letter-spacing: 0.2em;
+  font-size: 9px;
+  color: rgba(200,255,0,0.32);
+  letter-spacing: 0.28em;
   position: absolute;
-  top: 24px;
-  right: 48px;
+  top: 10px;
+  left: 48px;
+  right: auto;
+  z-index: 6;
+  pointer-events: none;
+  text-shadow: 0 0 6px rgba(0,0,0,0.9);
 }
 
 @media (max-width: 768px) {
-  .section-num { right: 20px; top: 16px; }
+  .section-num { left: 16px; top: 8px; font-size: 8px; }
 }
 
 /* ── GLOW SECTION DIVIDER ────────────────────────────────────────────── */

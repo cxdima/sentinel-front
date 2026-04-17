@@ -1,0 +1,132 @@
+/* ── SCROLL GUIDE (idle hint + back-to-top) ─────────────────────────── */
+.scroll-guide {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+}
+
+/* Stacked right-rail column: hint sits above the back-to-top button. */
+.scroll-guide__rail {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.scroll-guide__hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(6,8,6,0.78);
+  border: 1px solid rgba(200,255,0,0.25);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: rgba(200,255,0,0.92);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 280ms ease, transform 280ms ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  white-space: nowrap;
+}
+
+.scroll-guide__hint--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-guide__hint-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #c8ff00;
+  box-shadow: 0 0 8px #c8ff00;
+  animation: scroll-guide-pulse 1.4s ease-in-out infinite;
+}
+
+.scroll-guide__hint-chevron {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 0.5;
+  font-size: 10px;
+  color: #c8ff00;
+  animation: scroll-guide-bob 1.6s ease-in-out infinite;
+}
+
+@keyframes scroll-guide-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.85); }
+  50%      { opacity: 1;    transform: scale(1.15); }
+}
+
+@keyframes scroll-guide-bob {
+  0%, 100% { transform: translateY(-2px); opacity: 0.6; }
+  50%      { transform: translateY( 2px); opacity: 1; }
+}
+
+/* Back-to-top button */
+.scroll-guide__top {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6,8,6,0.85);
+  border: 1px solid rgba(200,255,0,0.35);
+  border-radius: 50%;
+  color: #c8ff00;
+  cursor: pointer;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 300ms ease, transform 300ms ease,
+              background 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.55);
+  font: inherit;
+}
+
+.scroll-guide__top--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-guide__top:hover,
+.scroll-guide__top:focus-visible {
+  background: rgba(200,255,0,0.12);
+  border-color: rgba(200,255,0,0.7);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 0 4px rgba(200,255,0,0.08);
+  outline: none;
+}
+
+.scroll-guide__top svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 768px) {
+  .scroll-guide__rail {
+    right: 14px;
+    bottom: 14px;
+    gap: 8px;
+  }
+  .scroll-guide__hint { font-size: 8px; padding: 5px 8px; }
+  .scroll-guide__top  { width: 36px; height: 36px; }
+  .scroll-guide__top svg { width: 14px; height: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-guide__hint-dot,
+  .scroll-guide__hint-chevron {
+    animation: none;
+  }
+}

@@ -25,6 +25,7 @@ export class LandingPage extends LitElement {
       <marquee-ticker></marquee-ticker>
       <cta-section></cta-section>
       <site-footer></site-footer>
+      <scroll-guide></scroll-guide>
     `
   }
 }

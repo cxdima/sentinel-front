@@ -17,6 +17,7 @@ import './components/how-section/how-section'
 import './components/cta-section/cta-section'
 import './components/webgl-bg/webgl-bg'
 import './components/marquee-ticker/marquee-ticker'
+import './components/scroll-guide/scroll-guide'
 import './components/landing-page/landing-page'
 import './components/app-router/app-router'
 
