@@ -1,15 +1,17 @@
-import { LitElement, html } from 'lit'
-import { customElement } from 'lit/decorators.js'
-import './site-footer.css'
+import { LitElement, html } from "lit";
+import { customElement } from "lit/decorators.js";
+import "./site-footer.css";
 
-@customElement('site-footer')
+@customElement("site-footer")
 export class SiteFooter extends LitElement {
-  override createRenderRoot() { return this }
+    override createRenderRoot() {
+        return this;
+    }
 
-  private readonly date = new Date().toISOString().slice(0, 10)
+    private readonly date = new Date().toISOString().slice(0, 10);
 
-  override render() {
-    return html`
+    override render() {
+        return html`
       <footer class="site-footer" role="contentinfo">
         <div class="site-footer__top">
           <div class="site-footer__brand">
@@ -52,6 +54,6 @@ export class SiteFooter extends LitElement {
           </div>
         </div>
       </footer>
-    `
-  }
+    `;
+    }
 }

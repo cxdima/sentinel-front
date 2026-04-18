@@ -1,120 +1,171 @@
 .scrolly-section {
-  position: relative;
-  border-bottom: 1px solid #1a1a1a;
+    position: relative;
+    border-bottom: 1px solid #1a1a1a;
 }
 
 /* Sticky visual — stays in view during scroll */
 .scrolly-section__sticky {
-  position: sticky;
-  top: 48px;
-  height: calc(100vh - 48px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+    position: sticky;
+    top: var(--nav-h);
+    height: calc(100vh - var(--nav-h));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Step indicator — shows progress through 6 exploits */
+.scrolly-step-indicator {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    z-index: 2;
+}
+
+.scrolly-step-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    flex-shrink: 0;
+}
+
+.scrolly-step-dot--active {
+    background: #ff2244;
+    border-color: rgba(255, 34, 68, 0.4);
 }
 
 /* Background content visible through blur overlay */
 .scrolly-bg {
-  text-align: center;
-  padding: 48px;
-  width: 100%;
-  max-width: 720px;
-  margin: 0 auto;
+    text-align: center;
+    padding: 48px;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
 }
 
 .scrolly-bg__label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
-  color: #c4c4c4;
-  letter-spacing: 0.2em;
-  margin-bottom: 16px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: #c4c4c4;
+    letter-spacing: 0.2em;
+    margin-bottom: 16px;
 }
 
 .scrolly-bg__number {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(80px, 14vw, 220px);
-  color: #ff2244;
-  letter-spacing: 0.04em;
-  line-height: 0.9;
-  font-variant-numeric: tabular-nums;
-  position: relative;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: clamp(80px, 14vw, 220px);
+    color: #ff2244;
+    letter-spacing: 0.04em;
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+    position: relative;
 }
 
 .scrolly-bg__number::after {
-  content: '';
-  position: absolute;
-  inset: -40% -10%;
-  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,34,68,0.18), transparent 70%);
-  z-index: -1;
-  pointer-events: none;
+    content: "";
+    position: absolute;
+    inset: -40% -10%;
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255, 34, 68, 0.18), transparent 70%);
+    z-index: -1;
+    pointer-events: none;
 }
 
 .scrolly-bg__subtitle {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
-  color: rgba(255,34,68,0.6);
-  letter-spacing: 0.2em;
-  margin-top: 8px;
-  margin-bottom: 40px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: rgba(255, 34, 68, 0.6);
+    letter-spacing: 0.2em;
+    margin-top: 8px;
+    margin-bottom: 40px;
 }
 
 .scrolly-bg__attacks {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: center;
-  max-width: 600px;
-  margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .scrolly-attack-row {
-  display: grid;
-  grid-template-columns: 80px 1fr 70px 100px;
-  gap: 12px;
-  width: 100%;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  padding: 6px 12px;
-  border-left: 2px solid transparent;
-  opacity: 0;
-  transform: translateX(-20px);
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.4s ease;
-  will-change: transform, opacity;
+    display: grid;
+    grid-template-columns: 80px 1fr 70px 100px;
+    gap: 12px;
+    width: 100%;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    padding: 6px 12px;
+    border-left: 2px solid transparent;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color
+        0.4s ease;
+    will-change: transform, opacity;
 }
 
 .scrolly-attack-row--visible {
-  opacity: 1;
-  transform: translateX(0);
-  border-left-color: rgba(255,34,68,0.4);
+    opacity: 1;
+    transform: translateX(0);
+    border-left-color: rgba(255, 34, 68, 0.4);
 }
 
-.scrolly-attack-row__hash { color: #9a9a9a; }
-.scrolly-attack-row__type { color: #d4d4d4; letter-spacing: 0.06em; }
-.scrolly-attack-row__amount { color: #ff5266; text-align: right; font-weight: 600; }
-.scrolly-attack-row__protocol { color: #b8b8b8; text-align: right; }
+.scrolly-attack-row__hash {
+    color: #9a9a9a;
+}
+.scrolly-attack-row__type {
+    color: #d4d4d4;
+    letter-spacing: 0.06em;
+}
+.scrolly-attack-row__amount {
+    color: #ff5266;
+    text-align: right;
+    font-weight: 600;
+}
+.scrolly-attack-row__protocol {
+    color: #b8b8b8;
+    text-align: right;
+}
 
-/* Tall spacer that creates scroll travel */
+/* Spacer that creates scroll travel */
 .scrolly-section__spacer {
-  height: 380vh;
+    height: 200vh;
 }
 
 @media (max-width: 768px) {
-  .scrolly-bg { padding: 24px 16px; }
-  .scrolly-bg__subtitle { margin-bottom: 24px; }
-  .scrolly-bg__number { font-size: clamp(64px, 16vw, 140px); }
-  .scrolly-attack-row {
-    grid-template-columns: 1fr 60px;
-    font-size: 9px;
-    padding: 5px 8px;
-  }
-  .scrolly-attack-row__hash,
-  .scrolly-attack-row__protocol { display: none; }
+    .scrolly-bg {
+        padding: 24px 16px;
+    }
+    .scrolly-bg__subtitle {
+        margin-bottom: 24px;
+    }
+    .scrolly-bg__number {
+        font-size: clamp(64px, 16vw, 140px);
+    }
+    .scrolly-attack-row {
+        grid-template-columns: 1fr 60px;
+        font-size: 10px;
+        padding: 5px 8px;
+    }
+    .scrolly-attack-row__hash,
+    .scrolly-attack-row__protocol {
+        display: none;
+    }
 }
 
 @media (max-width: 480px) {
-  .scrolly-bg__label { font-size: 9px; letter-spacing: 0.15em; }
-  .scrolly-bg__number { font-size: clamp(48px, 14vw, 100px); }
+    .scrolly-bg__label {
+        font-size: 10px;
+        letter-spacing: 0.15em;
+    }
+    .scrolly-bg__number {
+        font-size: clamp(48px, 14vw, 100px);
+    }
 }

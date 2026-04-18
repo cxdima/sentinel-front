@@ -1,61 +1,63 @@
-import { LitElement, html } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
-import { scrollProgress, subRange, observeViewport } from '../../utils/scroll'
-import './compare-table.css'
+import { LitElement, html } from "lit";
+import { customElement, state } from "lit/decorators.js";
+import { observeViewport, scrollProgress, subRange } from "../../utils/scroll";
+import "./compare-table.css";
 
 const ROWS = [
-  { cap: 'DETECTION SPEED',    def: 'Post-mine',       forta: 'Post-mine',    msig: 'Minutes',   sentinel: 'PRE-MINE (<200ms)' },
-  { cap: 'RESPONSE TIME',      def: '10–30s',          forta: 'Alert only',   msig: '5–60 min',  sentinel: 'SAME BLOCK (<3s)' },
-  { cap: 'PROOF OF PREVENTION', def: 'None',           forta: 'None',         msig: 'None',      sentinel: 'ZK PROOF ON-CHAIN' },
-  { cap: 'LOSS QUANTIFICATION', def: 'Manual estimate', forta: 'None',        msig: 'None',      sentinel: 'EXACT DOLLAR DELTA' },
-  { cap: 'OPERATOR OVERRIDE',  def: 'Possible',        forta: 'N/A',         msig: 'Possible',  sentinel: 'MATH PREVENTS IT' },
-  { cap: 'NETWORK EFFECT',     def: 'None',            forta: 'Manual alerts', msig: 'None',     sentinel: '12 PROTOCOLS AUTO-IMMUNE' },
-]
+    { cap: "DETECTION SPEED", def: "Post-mine", forta: "Post-mine", msig: "Minutes", sentinel: "PRE-MINE (<200ms)" },
+    { cap: "RESPONSE TIME", def: "10–30s", forta: "Alert only", msig: "5–60 min", sentinel: "SAME BLOCK (<3s)" },
+    { cap: "PROOF OF PREVENTION", def: "None", forta: "None", msig: "None", sentinel: "ZK PROOF ON-CHAIN" },
+    { cap: "LOSS QUANTIFICATION", def: "Manual estimate", forta: "None", msig: "None", sentinel: "EXACT DOLLAR DELTA" },
+    { cap: "OPERATOR OVERRIDE", def: "Possible", forta: "N/A", msig: "Possible", sentinel: "MATH PREVENTS IT" },
+    { cap: "NETWORK EFFECT", def: "None", forta: "Manual alerts", msig: "None", sentinel: "12 PROTOCOLS AUTO-IMMUNE" },
+];
 
-@customElement('compare-table')
+@customElement("compare-table")
 export class CompareTable extends LitElement {
-  override createRenderRoot() { return this }
+    override createRenderRoot() {
+        return this;
+    }
 
-  @state() private progress = 0
-  private ticking = false
-  private inView = false
-  private disposeObserver: (() => void) | null = null
+    @state() private progress = 0;
+    private ticking = false;
+    private inView = false;
+    private disposeObserver: (() => void) | null = null;
 
-  private readonly onScroll = () => {
-    if (!this.inView || this.ticking) return
-    this.ticking = true
-    requestAnimationFrame(() => {
-      const section = this.querySelector<HTMLElement>('.compare-scrolly')
-      if (section) {
-        const next = scrollProgress(section)
-        if (Math.abs(next - this.progress) > 0.001) this.progress = next
-      }
-      this.ticking = false
-    })
-  }
+    private readonly onScroll = () => {
+        if (!this.inView || this.ticking) return;
+        this.ticking = true;
+        requestAnimationFrame(() => {
+            const section = this.querySelector<HTMLElement>(".compare-scrolly");
+            if (section) {
+                const next = scrollProgress(section);
+                if (Math.abs(next - this.progress) > 0.001) this.progress = next;
+            }
+            this.ticking = false;
+        });
+    };
 
-  override connectedCallback() {
-    super.connectedCallback()
-    window.addEventListener('scroll', this.onScroll, { passive: true })
-    this.disposeObserver = observeViewport(this, inView => {
-      this.inView = inView
-      if (inView) this.onScroll()
-    })
-  }
+    override connectedCallback() {
+        super.connectedCallback();
+        window.addEventListener("scroll", this.onScroll, { passive: true });
+        this.disposeObserver = observeViewport(this, (inView) => {
+            this.inView = inView;
+            if (inView) this.onScroll();
+        });
+    }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback()
-    window.removeEventListener('scroll', this.onScroll)
-    this.disposeObserver?.()
-    this.disposeObserver = null
-  }
+    override disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener("scroll", this.onScroll);
+        this.disposeObserver?.();
+        this.disposeObserver = null;
+    }
 
-  override render() {
-    const headerIn = subRange(this.progress, 0, 0.12)
-    const tableIn = subRange(this.progress, 0.08, 0.35)
-    const calloutsIn = subRange(this.progress, 0.4, 0.7)
+    override render() {
+        const headerIn = subRange(this.progress, 0, 0.12);
+        const tableIn = subRange(this.progress, 0.08, 0.35);
+        const calloutsIn = subRange(this.progress, 0.4, 0.7);
 
-    return html`
+        return html`
       <section class="compare-scrolly" id="vs" aria-labelledby="vs-heading">
         <div class="compare-scrolly__sticky">
           <span class="section-num" aria-hidden="true">04 / 08</span>
@@ -85,8 +87,8 @@ export class CompareTable extends LitElement {
                   </thead>
                   <tbody>
                     ${ROWS.map((r, i) => {
-                      const rowIn = subRange(this.progress, 0.12 + i * 0.04, 0.22 + i * 0.04)
-                      return html`
+                        const rowIn = subRange(this.progress, 0.12 + i * 0.04, 0.22 + i * 0.04);
+                        return html`
                         <tr style="opacity: ${rowIn}; transform: translateY(${(1 - rowIn) * 16}px)">
                           <td>${r.cap}</td>
                           <td>${r.def}</td>
@@ -94,7 +96,7 @@ export class CompareTable extends LitElement {
                           <td>${r.msig}</td>
                           <td class="comp-table__highlight">${r.sentinel}</td>
                         </tr>
-                      `
+                      `;
                     })}
                   </tbody>
                 </table>
@@ -122,6 +124,6 @@ export class CompareTable extends LitElement {
         </div>
         <div class="compare-scrolly__spacer" aria-hidden="true"></div>
       </section>
-    `
-  }
+    `;
+    }
 }

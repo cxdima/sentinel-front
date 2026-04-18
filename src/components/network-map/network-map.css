@@ -1,0 +1,316 @@
+/* ── Network Map ────────────────────────────────────────────────────────── */
+.nm-panel {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.nm-header {
+    align-items: center;
+}
+.nm-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+}
+
+.nm-status__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    box-shadow: 0 0 10px currentColor;
+}
+
+.nm-stage {
+    position: relative;
+    background: #000;
+    overflow: hidden;
+    min-height: 420px;
+}
+
+.nm-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 960 / 440;
+}
+
+/* ── Payoff banner overlay ─────────────────────────────────────────────── */
+.nm-banner {
+    position: absolute;
+    top: 56px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 28px;
+    text-align: center;
+    z-index: 5;
+    pointer-events: none;
+    animation: nm-banner-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    background: rgba(0, 0, 0, 0.6);
+    min-width: 360px;
+}
+
+.nm-banner__title {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 30px;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.nm-banner__sub {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: #b0b0b0;
+}
+
+.nm-banner--threat {
+    border: 1px solid #ff2244;
+    box-shadow: 0 0 40px rgba(255, 34, 68, 0.35);
+}
+.nm-banner--threat .nm-banner__title {
+    color: #ff2244;
+}
+
+.nm-banner--defense {
+    border: 1px solid #36c88b;
+    box-shadow: 0 0 40px rgba(54, 200, 139, 0.35);
+}
+.nm-banner--defense .nm-banner__title {
+    color: #36c88b;
+}
+
+.nm-banner--proof {
+    border: 1px solid #c8ff00;
+    box-shadow: 0 0 40px rgba(200, 255, 0, 0.4);
+}
+.nm-banner--proof .nm-banner__title {
+    color: #c8ff00;
+}
+
+.nm-banner--ledger {
+    border: 1px solid #00d9ff;
+    box-shadow: 0 0 50px rgba(0, 217, 255, 0.45);
+}
+.nm-banner--ledger .nm-banner__title {
+    color: #00d9ff;
+}
+
+@keyframes nm-banner-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -8px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+.nm-node rect {
+    transition: stroke 0.25s ease, fill 0.25s ease;
+}
+.nm-node text {
+    transition: fill 0.25s ease;
+}
+
+.nm-telemetry {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2px;
+    padding: 2px;
+    border-top: 1px solid #111;
+    background: #0a0a0a;
+}
+
+.nm-tel__cell {
+    padding: 10px 14px;
+    background: #060606;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nm-tel__k {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    color: #888;
+    letter-spacing: 0.16em;
+    font-weight: 500;
+}
+
+.nm-tel__v {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 14px;
+    color: #e8e8e8;
+    letter-spacing: 0.04em;
+}
+
+/* ── Phase strip ───────────────────────────────────────────────────────── */
+.nm-phase-strip {
+    display: flex;
+    align-items: stretch;
+    border-top: 1px solid #111;
+    background: #050505;
+}
+
+.nm-phase-steps {
+    display: flex;
+    flex: 1;
+    gap: 0;
+}
+
+.nm-phase-step {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 20px;
+    border-right: 1px solid #111;
+    border-left: 2px solid transparent;
+    opacity: 0.3;
+    transition: opacity 0.4s ease, border-left-color 0.4s ease;
+    flex: 1;
+    min-width: 0;
+}
+
+.nm-phase-step--active {
+    opacity: 1;
+    border-left-color: #c8ff00;
+}
+
+.nm-phase-step--done {
+    opacity: 0.65;
+    border-left-color: rgba(54, 200, 139, 0.5);
+}
+
+.nm-phase-step__num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9px;
+    color: #444;
+    letter-spacing: 0.2em;
+}
+
+.nm-phase-step__label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    color: #888;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nm-phase-step--done .nm-phase-step__label {
+    color: #36c88b;
+}
+.nm-phase-step--active .nm-phase-step__label {
+    color: #c8ff00;
+}
+
+.nm-phase-step__mark {
+    font-size: 11px;
+    color: #333;
+    margin-top: auto;
+}
+
+.nm-phase-step--done .nm-phase-step__mark {
+    color: #36c88b;
+}
+.nm-phase-step--active .nm-phase-step__mark {
+    color: #c8ff00;
+}
+
+/* ── Immunity counter ──────────────────────────────────────────────────── */
+.nm-immunity-counter {
+    padding: 12px 24px;
+    text-align: right;
+    border-left: 1px solid #111;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 160px;
+    background: rgba(200, 255, 0, 0.02);
+}
+
+.nm-immunity-counter__val {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    justify-content: flex-end;
+    line-height: 1;
+}
+
+.nm-immunity-counter__num {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: clamp(40px, 4vw, 64px);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    transition: color 0.4s ease;
+}
+
+.nm-immunity-counter__den {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: clamp(22px, 2.2vw, 36px);
+    color: #555;
+    letter-spacing: 0.04em;
+    line-height: 1;
+}
+
+.nm-immunity-counter__label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9px;
+    color: #666;
+    letter-spacing: 0.2em;
+    margin-top: 4px;
+}
+
+.nm-immunity-counter__prevented {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    color: #36c88b;
+    letter-spacing: 0.12em;
+    margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+    .nm-phase-strip {
+        flex-direction: column;
+    }
+    .nm-immunity-counter {
+        text-align: left;
+        border-left: none;
+        border-top: 1px solid #111;
+        min-width: 0;
+    }
+    .nm-immunity-counter__val {
+        justify-content: flex-start;
+    }
+    .nm-phase-step {
+        padding: 8px 14px;
+    }
+    .nm-phase-step__label {
+        font-size: 9px;
+    }
+}
+
+/* ── Reduced motion — disable infinite loops for sensitive users ───────── */
+@media (prefers-reduced-motion: reduce) {
+    .nm-stage svg animate,
+    .nm-stage svg animateMotion,
+    .nm-stage svg animateTransform {
+        display: none;
+    }
+    .nm-banner {
+        animation: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .nm-telemetry {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

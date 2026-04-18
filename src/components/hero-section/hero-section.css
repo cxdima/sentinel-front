@@ -1,333 +1,383 @@
 .hero {
-  position: relative;
-  height: 100vh;
-  max-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 80px 48px 24px;
-  border-bottom: 1px solid #1a1a1a;
-  overflow: hidden;
-  box-sizing: border-box;
+    position: relative;
+    height: 100vh;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 48px 24px;
+    border-bottom: 1px solid #1a1a1a;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 /* ── Staggered reveal ─────────────────────────────────────────────────── */
-.hero__anim-1, .hero__anim-2, .hero__anim-3,
-.hero__anim-4, .hero__anim-5, .hero__anim-6 {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+.hero__anim-1,
+.hero__anim-2,
+.hero__anim-3,
+.hero__anim-4,
+.hero__anim-5,
+.hero__anim-6 {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.hero--revealed .hero__anim-1 { opacity: 1; transform: translateY(0); transition-delay: 0.1s; }
-.hero--revealed .hero__anim-2 { opacity: 1; transform: translateY(0); transition-delay: 0.25s; }
-.hero--revealed .hero__anim-3 { opacity: 1; transform: translateY(0); transition-delay: 0.5s; }
-.hero--revealed .hero__anim-4 { opacity: 1; transform: translateY(0); transition-delay: 0.7s; }
-.hero--revealed .hero__anim-5 { opacity: 1; transform: translateY(0); transition-delay: 0.9s; }
-.hero--revealed .hero__anim-6 { opacity: 1; transform: translateY(0); transition-delay: 1.2s; }
+.hero--revealed .hero__anim-1 {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.1s;
+}
+.hero--revealed .hero__anim-2 {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.25s;
+}
+.hero--revealed .hero__anim-3 {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.5s;
+}
+.hero--revealed .hero__anim-4 {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.7s;
+}
+.hero--revealed .hero__anim-5 {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.9s;
+}
+.hero--revealed .hero__anim-6 {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 1.2s;
+}
 
 /* ── Grid background ──────────────────────────────────────────────────── */
 .hero__grid-bg {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(26,26,26,0.5) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(26,26,26,0.5) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(26, 26, 26, 0.5) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26, 26, 26, 0.5) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
 }
 
 /* ── Scanline sweep ───────────────────────────────────────────────────── */
 .hero__scanline {
-  position: absolute;
-  left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #c8ff00, transparent);
-  opacity: 0;
-  animation: scanline 5s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 2;
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #c8ff00, transparent);
+    opacity: 0;
+    animation: scanline 5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 2;
 }
 
 /* ── Background attack graph ──────────────────────────────────────────── */
 .hero__bg-graph {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.6;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.6;
 }
 
 .hero__graph-svg {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 .hg-edge {
-  stroke: #2a2a2a;
-  stroke-width: 0.5;
-  stroke-dasharray: 4 6;
-  animation: dash-flow 3s linear infinite;
+    stroke: #2a2a2a;
+    stroke-width: 0.5;
+    stroke-dasharray: 4 6;
+    animation: dash-flow 3s linear infinite;
 }
 
 /* ── Gradient mask — stronger for readability ────────────────────────── */
 .hero__gradient-mask {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    100deg,
-    #000 25%,
-    rgba(0,0,0,0.9) 40%,
-    rgba(0,0,0,0.6) 55%,
-    transparent 100%
-  );
-  pointer-events: none;
-  z-index: 3;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, #000 25%, rgba(0, 0, 0, 0.9) 40%, rgba(0, 0, 0, 0.6) 55%, transparent 100%);
+    pointer-events: none;
+    z-index: 3;
 }
 
 /* ── Reticle corners ──────────────────────────────────────────────────── */
 .hero__corner {
-  position: absolute;
-  width: 32px; height: 32px;
-  pointer-events: none;
-  z-index: 4;
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    pointer-events: none;
+    z-index: 4;
 }
 
 .hero__corner--tl {
-  top: 16px; left: 16px;
-  border-top: 1.5px solid rgba(200,255,0,0.4);
-  border-left: 1.5px solid rgba(200,255,0,0.4);
+    top: 16px;
+    left: 16px;
+    border-top: 1.5px solid rgba(200, 255, 0, 0.4);
+    border-left: 1.5px solid rgba(200, 255, 0, 0.4);
 }
 
 .hero__corner--br {
-  bottom: 16px; right: 16px;
-  border-bottom: 1.5px solid rgba(200,255,0,0.4);
-  border-right: 1.5px solid rgba(200,255,0,0.4);
+    bottom: 16px;
+    right: 16px;
+    border-bottom: 1.5px solid rgba(200, 255, 0, 0.4);
+    border-right: 1.5px solid rgba(200, 255, 0, 0.4);
 }
 
 /* ── Text content ─────────────────────────────────────────────────────── */
 .hero__content {
-  position: relative;
-  z-index: 5;
-  max-width: 720px;
+    position: relative;
+    z-index: 5;
+    max-width: 720px;
 }
 
 .hero__eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
 }
 
 .hero__eyebrow-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  color: #444444;
-  letter-spacing: 0.2em;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    color: #8a8a8a;
+    letter-spacing: 0.2em;
 }
 
 /* ── Title — gradient text + glow ────────────────────────────────────── */
 .hero__title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(80px, 16vw, 220px);
-  letter-spacing: 0.04em;
-  line-height: 0.85;
-  margin-bottom: 20px;
-  background: linear-gradient(
-    170deg,
-    #c8ff00 0%,
-    #e8ff66 40%,
-    #c8ff00 60%,
-    #90cc00 100%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 60px rgba(200, 255, 0, 0.2));
-  animation: glitch 12s 3s infinite;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: clamp(80px, 16vw, 220px);
+    letter-spacing: 0.04em;
+    line-height: 0.85;
+    margin-bottom: 20px;
+    background: linear-gradient(170deg, #c8ff00 0%, #e8ff66 40%, #c8ff00 60%, #90cc00 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 60px rgba(200, 255, 0, 0.2));
+    animation: glitch 12s 3s infinite;
 }
 
 /* ── Version tag next to title ───────────────────────────────────────── */
 .hero__title-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 16px;
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
 }
 
 .hero__title-version {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
-  color: #444;
-  letter-spacing: 0.15em;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: #444;
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
 }
 
 /* ── Subtitle ─────────────────────────────────────────────────────────── */
 .hero__subtitle {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: clamp(12px, 1.4vw, 14px);
-  color: #888;
-  line-height: 1.8;
-  margin-bottom: 32px;
-  letter-spacing: 0.02em;
-  max-width: 560px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: clamp(12px, 1.4vw, 14px);
+    color: #c4c4c4;
+    line-height: 1.8;
+    margin-bottom: 32px;
+    letter-spacing: 0.02em;
+    max-width: 560px;
 }
 
 /* ── CTAs ──────────────────────────────────────────────────────────────── */
 .hero__ctas {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 40px;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
 }
 
 /* ── Stats row — with borders and better spacing ─────────────────────── */
 .hero__stats {
-  display: flex;
-  align-items: stretch;
-  gap: 0;
-  flex-wrap: wrap;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    flex-wrap: wrap;
 }
 
 .hero-stat {
-  padding: 16px 24px;
-  border: 1px solid #1a1a1a;
-  border-right: none;
-  background: rgba(10, 10, 10, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+    padding: 16px 24px;
+    border: 1px solid #1a1a1a;
+    border-right: none;
+    border-left: 2px solid rgba(200, 255, 0, 0.4);
+    background: rgba(10, 10, 10, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .hero-stat:last-of-type {
-  border-right: 1px solid #1a1a1a;
+    border-right: 1px solid #1a1a1a;
 }
 
 .hero-stat__value {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(28px, 3vw, 40px);
-  color: #e8e8e8;
-  letter-spacing: 0.06em;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: clamp(28px, 3vw, 40px);
+    color: #c8ff00;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
 }
 
 .hero-stat__label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px;
-  color: #444444;
-  letter-spacing: 0.15em;
-  margin-top: 6px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    color: #666666;
+    letter-spacing: 0.15em;
+    margin-top: 6px;
 }
 
 .hero-stat__divider {
-  display: none;
+    display: none;
 }
 
 /* ── Scroll cue ───────────────────────────────────────────────────────── */
 .hero__scroll-cue {
-  position: absolute;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  z-index: 5;
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 5;
 }
 
 .hero__scroll-line {
-  width: 1px;
-  height: 48px;
-  background: linear-gradient(to bottom, transparent, #c8ff00);
-  animation: float-up 2s ease-in-out infinite;
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, transparent, #c8ff00);
+    animation: float-up 2s ease-in-out infinite;
 }
 
 .hero__scroll-text {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 8px;
-  color: #444;
-  letter-spacing: 0.2em;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    color: #555;
+    letter-spacing: 0.2em;
 }
 
 /* ── Responsive ───────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .hero {
-    padding: 64px 20px 20px;
-    justify-content: flex-end;
-    padding-bottom: 80px;
-  }
+    .hero {
+        padding: 64px 20px 20px;
+        justify-content: flex-end;
+        padding-bottom: 80px;
+    }
 
-  .hero__content {
-    max-width: 100%;
-  }
+    .hero__content {
+        max-width: 100%;
+    }
 
-  .hero__eyebrow-label {
-    font-size: 8px;
-  }
+    .hero__eyebrow-label {
+        font-size: 10px;
+    }
 
-  .hero__subtitle {
-    font-size: 12px;
-    line-height: 1.7;
-    margin-bottom: 24px;
-  }
+    .hero__subtitle {
+        font-size: 12px;
+        line-height: 1.7;
+        margin-bottom: 24px;
+    }
 
-  .hero__ctas {
-    flex-direction: column;
-    margin-bottom: 24px;
-  }
+    .hero__ctas {
+        flex-direction: column;
+        margin-bottom: 24px;
+    }
 
-  .hero__ctas .btn {
-    width: 100%;
-    justify-content: center;
-  }
+    .hero__ctas .btn {
+        width: 100%;
+        justify-content: center;
+    }
 
-  .hero__stats {
-    flex-direction: column;
-    gap: 0;
-  }
+    .hero__stats {
+        flex-direction: column;
+        gap: 0;
+    }
 
-  .hero-stat {
-    padding: 12px 16px;
-    border-right: 1px solid #1a1a1a;
-    border-bottom: none;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+    .hero-stat {
+        padding: 12px 16px;
+        border-right: 1px solid #1a1a1a;
+        border-bottom: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 
-  .hero-stat:last-of-type {
-    border-bottom: 1px solid #1a1a1a;
-  }
+    .hero-stat:last-of-type {
+        border-bottom: 1px solid #1a1a1a;
+    }
 
-  .hero-stat__value {
-    font-size: 24px;
-    min-width: 80px;
-  }
+    .hero-stat__value {
+        font-size: 24px;
+        min-width: 80px;
+    }
 
-  .hero-stat__label {
-    margin-top: 0;
-    font-size: 8px;
-  }
+    .hero-stat__label {
+        margin-top: 0;
+        font-size: 10px;
+    }
 
-  .hero__scroll-cue { display: none; }
+    .hero__scroll-cue {
+        display: none;
+    }
 
-  .hero__gradient-mask {
-    background: linear-gradient(
-      180deg,
-      rgba(0,0,0,0.3) 0%,
-      rgba(0,0,0,0.7) 30%,
-      rgba(0,0,0,0.95) 70%,
-      #000 100%
-    );
-  }
+    .hero__gradient-mask {
+        background: linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0.3) 0%,
+            rgba(0, 0, 0, 0.7) 30%,
+            rgba(0, 0, 0, 0.95) 70%,
+            #000 100%
+        );
+    }
 }
 
 @media (max-width: 480px) {
-  .hero { padding: 56px 16px 60px; }
+    .hero {
+        padding: 56px 16px 60px;
+    }
 
-  .hero__title {
-    font-size: clamp(56px, 18vw, 100px);
-  }
+    .hero__title {
+        font-size: clamp(56px, 18vw, 100px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero__title {
+        animation: none !important;
+        filter: none;
+    }
+    .hero__scanline {
+        animation: none !important;
+        display: none;
+    }
+    .hg-edge {
+        animation: none !important;
+    }
+    .hero__scroll-line {
+        animation: none !important;
+    }
+    .hero__anim-1,
+    .hero__anim-2,
+    .hero__anim-3,
+    .hero__anim-4,
+    .hero__anim-5,
+    .hero__anim-6 {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
 }

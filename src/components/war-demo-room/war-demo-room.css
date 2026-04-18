@@ -1,0 +1,603 @@
+/* ── Internal-route global behaviors ────────────────────────────────────
+   Scoped to body.in-app — toggled by app-router when the route is
+   dashboard / demo / attacker. Landing render is unaffected.
+   ──────────────────────────────────────────────────────────────────────── */
+body.in-app nav-bar {
+    display: none !important;
+}
+
+/* ── War Demo Room ─────────────────────────────────────────────────────────
+   Builds on the .war-room, .panel, .wr-* classes defined in war-room.css +
+   global.css. Only adds demo-specific pieces.
+   ──────────────────────────────────────────────────────────────────────── */
+
+.war-demo-room {
+    min-height: 100vh;
+}
+
+.war-demo-room .wr-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0;
+}
+
+/* Sticky header so identity + mode toggle persist while user scrolls */
+.war-demo-room .wr-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    isolation: isolate;
+}
+
+/* ── Segmented mode toggle ─────────────────────────────────────────────── */
+.wdr-mode-seg {
+    display: inline-flex;
+    border: 1px solid #2a2a2a;
+    padding: 0;
+    overflow: hidden;
+}
+
+.wdr-seg {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    font-weight: 600;
+    color: #888;
+    background: transparent;
+    border: none;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    min-width: 48px;
+}
+
+.wdr-seg + .wdr-seg {
+    border-left: 1px solid #2a2a2a;
+}
+.wdr-seg:hover {
+    color: #e8e8e8;
+}
+.wdr-seg--active {
+    background: #c8ff00;
+    color: #000;
+}
+.wdr-seg--active:hover {
+    color: #000;
+}
+
+/* ── Service-health strip ──────────────────────────────────────────────── */
+.wdr-health-strip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 4px;
+}
+
+.wdr-health-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ── Attacker-brief cross link ─────────────────────────────────────────── */
+.wdr-attacker-link {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: #ff5266;
+    text-decoration: none;
+    padding: 5px 10px;
+    border: 1px solid rgba(255, 82, 102, 0.35);
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.wdr-attacker-link:hover {
+    border-color: #ff5266;
+    color: #fff;
+    background: rgba(255, 82, 102, 0.08);
+}
+
+/* ── Hero network map ──────────────────────────────────────────────────── */
+.wdr-hero-map {
+    display: block;
+}
+.wdr-hero-map .nm-panel::before,
+.wdr-hero-map .nm-panel::after {
+    width: 24px;
+    height: 24px;
+    border-width: 2px;
+}
+
+/* ── Controls + Pipeline two-column row ────────────────────────────────── */
+.wdr-controls-row {
+    display: grid;
+    grid-template-columns: minmax(380px, 1fr) 2fr;
+    gap: 2px;
+}
+
+@media (max-width: 1100px) {
+    .wdr-controls-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Scenario launcher ─────────────────────────────────────────────────── */
+.wdr-controls {
+    position: relative;
+}
+.wdr-control-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding: 2px;
+}
+
+@media (min-width: 1400px) {
+    .wdr-controls-row {
+        grid-template-columns: minmax(460px, 1.1fr) 2fr;
+    }
+}
+
+.wdr-scenario {
+    text-align: left;
+    background: #060606;
+    border: 1px solid #1a1a1a;
+    padding: 16px;
+    cursor: pointer;
+    font-family: "IBM Plex Mono", monospace;
+    color: #e8e8e8;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color 0.15s, background 0.15s, transform 0.15s;
+    min-height: 140px;
+}
+.wdr-scenario:hover:not(:disabled) {
+    border-color: #c8ff00;
+    background: rgba(200, 255, 0, 0.03);
+}
+.wdr-scenario:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+.wdr-scenario--busy {
+    border-color: #c8ff00;
+    background: rgba(200, 255, 0, 0.06);
+    animation: wdr-busy-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes wdr-busy-pulse {
+    0%,
+    100% {
+        box-shadow: inset 0 0 0 0 rgba(200, 255, 0, 0);
+    }
+    50% {
+        box-shadow: inset 0 0 24px 0 rgba(200, 255, 0, 0.08);
+    }
+}
+
+.wdr-scenario__head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+}
+.wdr-scenario__sev {
+    padding: 2px 6px;
+    border: 1px solid;
+}
+.wdr-scenario__sev--critical {
+    color: #ff2244;
+    border-color: rgba(255, 34, 68, 0.4);
+}
+.wdr-scenario__sev--high {
+    color: #d47d27;
+    border-color: rgba(212, 125, 39, 0.4);
+}
+.wdr-scenario__sev--medium {
+    color: #c8ff00;
+    border-color: rgba(200, 255, 0, 0.4);
+}
+.wdr-scenario__sev--benign {
+    color: #5eead4;
+    border-color: rgba(94, 234, 212, 0.4);
+}
+.wdr-scenario__eta {
+    color: #666;
+}
+
+.wdr-scenario__label {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.05em;
+    color: #c8ff00;
+    line-height: 1.1;
+}
+.wdr-scenario__desc {
+    font-size: 11px;
+    color: #b0b0b0;
+    letter-spacing: 0.02em;
+    line-height: 1.55;
+    flex: 1;
+}
+.wdr-scenario__cta {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    color: #000;
+    background: #c8ff00;
+    padding: 10px 16px;
+    margin-top: 4px;
+    text-align: center;
+    transition: background 0.15s, box-shadow 0.15s, transform 0.08s;
+    border: 1px solid #c8ff00;
+}
+.wdr-scenario:hover:not(:disabled) .wdr-scenario__cta {
+    background: #fff;
+    border-color: #fff;
+    box-shadow: 0 0 24px rgba(200, 255, 0, 0.5);
+}
+.wdr-scenario:active:not(:disabled) .wdr-scenario__cta {
+    transform: translateY(1px);
+}
+.wdr-scenario--busy .wdr-scenario__cta {
+    background: transparent;
+    color: #c8ff00;
+    border: 1px solid rgba(200, 255, 0, 0.4);
+}
+
+.wdr-error {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    color: #d47d27;
+    border-top: 1px solid #1a1a1a;
+    padding: 10px 16px;
+    background: rgba(212, 125, 39, 0.04);
+}
+
+/* ── Pipeline ──────────────────────────────────────────────────────────── */
+.wdr-pipeline__body {
+    display: grid;
+    grid-template-columns: 1fr 24px 1fr 24px 1fr 24px 1fr 24px 1fr;
+    align-items: stretch;
+    gap: 0;
+    padding: 20px 20px 8px;
+}
+
+.wdr-phase {
+    background: #060606;
+    border: 1px solid #1a1a1a;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    min-width: 0;
+}
+
+.wdr-phase--active {
+    border-color: #c8ff00;
+    animation: wdr-busy-pulse 1.0s ease-in-out infinite;
+}
+.wdr-phase--active::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border: 1px solid rgba(200, 255, 0, 0.3);
+    pointer-events: none;
+}
+
+.wdr-phase--done {
+    border-color: rgba(54, 200, 139, 0.35);
+    background: rgba(54, 200, 139, 0.04);
+}
+
+.wdr-phase__num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9px;
+    color: #444;
+    letter-spacing: 0.2em;
+}
+.wdr-phase__label {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.06em;
+    color: #e8e8e8;
+    line-height: 1;
+}
+.wdr-phase--done .wdr-phase__label {
+    color: #36c88b;
+}
+.wdr-phase__code {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 8px;
+    color: #666;
+    letter-spacing: 0.1em;
+}
+.wdr-phase__ms {
+    margin-top: auto;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    color: #c8ff00;
+    letter-spacing: 0.06em;
+}
+.wdr-phase:not(.wdr-phase--done) .wdr-phase__ms {
+    color: #555;
+}
+
+.wdr-phase__link {
+    align-self: center;
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(to right, #222, #222);
+    position: relative;
+}
+.wdr-phase__link--done::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(54, 200, 139, 0.9), rgba(200, 255, 0, 0.9));
+    animation: wdr-link-flow 1.5s ease-out forwards;
+}
+
+@keyframes wdr-link-flow {
+    from {
+        transform: scaleX(0);
+        transform-origin: left;
+    }
+    to {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+}
+
+.wdr-pipeline__details {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    padding: 12px 20px 20px;
+    border-top: 1px solid #111;
+    margin-top: 12px;
+}
+.wdr-pipeline__details > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 14px;
+    background: rgba(10, 10, 10, 0.5);
+}
+.wdr-kv__k {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 8px;
+    color: #555;
+    letter-spacing: 0.15em;
+}
+.wdr-kv__v {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: #e8e8e8;
+    letter-spacing: 0.04em;
+}
+
+/* ── Metrics row (reuse .wr-metric-card styles) ────────────────────────── */
+.wdr-metric-grid {
+    margin-top: 2px;
+}
+
+/* ── Grid-2 (feed + sidebar) ───────────────────────────────────────────── */
+.wdr-grid-2 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2px;
+    margin-top: 2px;
+}
+
+.wdr-right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* ── Feed ──────────────────────────────────────────────────────────────── */
+.wdr-feed {
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+}
+.wdr-feed__rows {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 420px;
+    font-family: "IBM Plex Mono", monospace;
+}
+.wdr-feed__empty {
+    padding: 40px;
+    text-align: center;
+    color: #444;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+}
+
+.wdr-evt {
+    display: grid;
+    grid-template-columns: 90px 170px 1fr;
+    gap: 8px;
+    padding: 8px 16px;
+    border-bottom: 1px solid #0e0e0e;
+    font-size: 10px;
+    align-items: center;
+    transition: background 0.15s;
+}
+.wdr-evt:hover {
+    background: rgba(200, 255, 0, 0.015);
+}
+.wdr-evt--active {
+    background: rgba(200, 255, 0, 0.04);
+    border-left: 2px solid #c8ff00;
+    padding-left: 14px;
+}
+
+.wdr-evt__time {
+    color: #555;
+    font-size: 9px;
+}
+.wdr-evt__kind {
+    color: #e8e8e8;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+.wdr-evt__kind--pending-tx {
+    color: #888;
+}
+.wdr-evt__kind--threat-candidate,
+.wdr-evt__kind--threat-confirmed {
+    color: #ff2244;
+}
+.wdr-evt__kind--defense-submitted,
+.wdr-evt__kind--defense-mined,
+.wdr-evt__kind--defense-rejected {
+    color: #36c88b;
+}
+.wdr-evt__kind--prover-started,
+.wdr-evt__kind--prover-finished {
+    color: #c8ff00;
+}
+.wdr-evt__kind--counterfactual-ready {
+    color: #00d9ff;
+}
+.wdr-evt__kind--ledger-recorded {
+    color: #00d9ff;
+}
+.wdr-evt__kind--preemptive-signature,
+.wdr-evt__kind--preemptive-executed,
+.wdr-evt__kind--preemptive-alert,
+.wdr-evt__kind--federation-sync {
+    color: #d47d27;
+}
+
+.wdr-evt__summary {
+    color: #9a9a9a;
+    font-size: 10px;
+}
+
+/* ── Timeline strip ────────────────────────────────────────────────────── */
+.wdr-timeline__svg-wrap {
+    padding: 12px 16px;
+}
+.wdr-timeline__svg {
+    width: 100%;
+    height: 48px;
+    display: block;
+}
+
+/* ── Legend ────────────────────────────────────────────────────────────── */
+.wdr-legend__rows {
+    padding: 8px 0;
+}
+.wdr-legend__row {
+    display: grid;
+    grid-template-columns: 14px 140px 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9px;
+}
+.wdr-legend__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    justify-self: center;
+}
+.wdr-legend__k {
+    color: #e8e8e8;
+    letter-spacing: 0.08em;
+}
+.wdr-legend__d {
+    color: #777;
+    letter-spacing: 0.02em;
+}
+.wdr-legend__footer {
+    padding: 10px 16px;
+    border-top: 1px solid #111;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+    .wdr-control-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .wdr-pipeline__body {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+    .wdr-phase__link {
+        display: none;
+    }
+    .wdr-pipeline__details {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .wdr-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .wdr-control-grid {
+        grid-template-columns: 1fr;
+    }
+    .wdr-pipeline__details {
+        grid-template-columns: 1fr;
+    }
+    .wdr-evt {
+        grid-template-columns: 80px 1fr;
+    }
+    .wdr-evt__summary {
+        grid-column: 1 / -1;
+        padding-left: 88px;
+        color: #888;
+    }
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .wdr-scenario--busy,
+    .wdr-phase--active,
+    .wdr-phase__link--done::before {
+        animation: none !important;
+    }
+    .wdr-scenario:active:not(:disabled) .wdr-scenario__cta {
+        transform: none;
+    }
+}
+
+/* ── Touch-target minimums on small screens ────────────────────────────── */
+@media (max-width: 768px) {
+    .wdr-seg {
+        min-height: 44px;
+    }
+    .wdr-attacker-link {
+        padding: 10px 14px;
+    }
+    .wdr-scenario__cta {
+        padding: 14px 16px;
+        min-height: 44px;
+    }
+}
+
+/* ── Status bar label density — nudge from 9px to 10px for AA contrast ── */
+.war-demo-room .wr-status-label,
+.war-demo-room .wr-status-value {
+    font-size: 10px;
+    color: #bbb;
+}
+.war-demo-room .wr-status-label {
+    color: #8a8a8a;
+}

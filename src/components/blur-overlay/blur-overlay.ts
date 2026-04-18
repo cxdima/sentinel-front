@@ -1,106 +1,108 @@
-import { LitElement, html } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
-import { scrollProgress, subRange, observeViewport } from '../../utils/scroll'
-import './blur-overlay.css'
+import { LitElement, html } from "lit";
+import { customElement, state } from "lit/decorators.js";
+import { observeViewport, scrollProgress, subRange } from "../../utils/scroll";
+import "./blur-overlay.css";
 
-@customElement('blur-overlay')
+@customElement("blur-overlay")
 export class BlurOverlay extends LitElement {
-  override createRenderRoot() { return this }
-
-  @state() private revealPct = 100
-  @state() private phaseIdx = 0
-  @state() private slideOutPct = 0
-
-  private triggerEl: HTMLElement | null = null
-  private ticking = false
-  private inView = false
-  private disposeObserver: (() => void) | null = null
-
-  override connectedCallback() {
-    super.connectedCallback()
-    requestAnimationFrame(() => {
-      this.triggerEl = document.getElementById('problem')
-      window.addEventListener('scroll', this.onScroll, { passive: true })
-      if (this.triggerEl) {
-        this.disposeObserver = observeViewport(this.triggerEl, inView => {
-          this.inView = inView
-          if (inView) this.onScroll()
-          else if (this.revealPct !== 100) {
-            this.revealPct = 100
-            this.slideOutPct = 0
-          }
-        })
-      }
-    })
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback()
-    window.removeEventListener('scroll', this.onScroll)
-    this.disposeObserver?.()
-    this.disposeObserver = null
-  }
-
-  private readonly onScroll = () => {
-    if (!this.inView || this.ticking) return
-    this.ticking = true
-    requestAnimationFrame(() => {
-      this.updateScroll()
-      this.ticking = false
-    })
-  }
-
-  private updateScroll() {
-    const section = this.triggerEl
-    if (!section) return
-
-    const rect     = section.getBoundingClientRect()
-    const scrolled = -rect.top
-
-    if (scrolled < 0) {
-      if (this.revealPct !== 100) this.revealPct = 100
-      if (this.slideOutPct !== 0) this.slideOutPct = 0
-      return
+    override createRenderRoot() {
+        return this;
     }
 
-    const p = scrollProgress(section)
+    @state() private revealPct = 100;
+    @state() private phaseIdx = 0;
+    @state() private slideOutPct = 0;
 
-    let nextReveal = 100
-    let nextSlideOut = 0
-    let nextPhase = 0
+    private triggerEl: HTMLElement | null = null;
+    private ticking = false;
+    private inView = false;
+    private disposeObserver: (() => void) | null = null;
 
-    if (p < 0.12) {
-      nextReveal = Math.round(100 - subRange(p, 0, 0.12) * 100)
-      nextPhase = 0
-    } else if (p < 0.35) {
-      nextReveal = 0
-      nextPhase = 0
-    } else if (p < 0.55) {
-      nextReveal = 0
-      nextPhase = 1
-    } else if (p < 0.75) {
-      nextReveal = 0
-      nextPhase = 2
-    } else {
-      nextReveal = 0
-      nextSlideOut = Math.round(subRange(p, 0.75, 1) * 100)
-      nextPhase = 2
+    override connectedCallback() {
+        super.connectedCallback();
+        requestAnimationFrame(() => {
+            this.triggerEl = document.getElementById("problem");
+            window.addEventListener("scroll", this.onScroll, { passive: true });
+            if (this.triggerEl) {
+                this.disposeObserver = observeViewport(this.triggerEl, (inView) => {
+                    this.inView = inView;
+                    if (inView) this.onScroll();
+                    else if (this.revealPct !== 100) {
+                        this.revealPct = 100;
+                        this.slideOutPct = 0;
+                    }
+                });
+            }
+        });
     }
 
-    if (nextReveal !== this.revealPct) this.revealPct = nextReveal
-    if (nextSlideOut !== this.slideOutPct) this.slideOutPct = nextSlideOut
-    if (nextPhase !== this.phaseIdx) this.phaseIdx = nextPhase
-  }
+    override disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener("scroll", this.onScroll);
+        this.disposeObserver?.();
+        this.disposeObserver = null;
+    }
 
-  override render() {
-    // Combined transform: reveal from bottom (0..100%) + slide-out upwards (0..100%).
-    // Total translateY in % of element height: revealPct (hides) + slideOutPct (slides away upward).
-    const totalY = this.revealPct - this.slideOutPct
-    const opacity = this.slideOutPct > 0 ? 1 - this.slideOutPct / 100 : 1
-    const translateStyle = `transform: translateY(${totalY}%); opacity: ${opacity}`
-    const visibleClass = this.revealPct < 100 ? 'blur-overlay blur-overlay--visible' : 'blur-overlay'
+    private readonly onScroll = () => {
+        if (!this.inView || this.ticking) return;
+        this.ticking = true;
+        requestAnimationFrame(() => {
+            this.updateScroll();
+            this.ticking = false;
+        });
+    };
 
-    return html`
+    private updateScroll() {
+        const section = this.triggerEl;
+        if (!section) return;
+
+        const rect = section.getBoundingClientRect();
+        const scrolled = -rect.top;
+
+        if (scrolled < 0) {
+            if (this.revealPct !== 100) this.revealPct = 100;
+            if (this.slideOutPct !== 0) this.slideOutPct = 0;
+            return;
+        }
+
+        const p = scrollProgress(section);
+
+        let nextReveal = 100;
+        let nextSlideOut = 0;
+        let nextPhase = 0;
+
+        if (p < 0.12) {
+            nextReveal = Math.round(100 - subRange(p, 0, 0.12) * 100);
+            nextPhase = 0;
+        } else if (p < 0.35) {
+            nextReveal = 0;
+            nextPhase = 0;
+        } else if (p < 0.55) {
+            nextReveal = 0;
+            nextPhase = 1;
+        } else if (p < 0.75) {
+            nextReveal = 0;
+            nextPhase = 2;
+        } else {
+            nextReveal = 0;
+            nextSlideOut = Math.round(subRange(p, 0.75, 1) * 100);
+            nextPhase = 2;
+        }
+
+        if (nextReveal !== this.revealPct) this.revealPct = nextReveal;
+        if (nextSlideOut !== this.slideOutPct) this.slideOutPct = nextSlideOut;
+        if (nextPhase !== this.phaseIdx) this.phaseIdx = nextPhase;
+    }
+
+    override render() {
+        // Combined transform: reveal from bottom (0..100%) + slide-out upwards (0..100%).
+        // Total translateY in % of element height: revealPct (hides) + slideOutPct (slides away upward).
+        const totalY = this.revealPct - this.slideOutPct;
+        const opacity = this.slideOutPct > 0 ? 1 - this.slideOutPct / 100 : 1;
+        const translateStyle = `transform: translateY(${totalY}%); opacity: ${opacity}`;
+        const visibleClass = this.revealPct < 100 ? "blur-overlay blur-overlay--visible" : "blur-overlay";
+
+        return html`
       <div
         class=${visibleClass}
         style=${translateStyle}
@@ -111,7 +113,7 @@ export class BlurOverlay extends LitElement {
 
         <div class="blur-overlay__inner">
           <!-- Phase 0: The Problem -->
-          <div class="blur-phase ${this.phaseIdx === 0 ? 'blur-phase--active' : ''}">
+          <div class="blur-phase ${this.phaseIdx === 0 ? "blur-phase--active" : ""}">
             <div class="blur-phase__tag">THE PROBLEM</div>
             <h3 class="blur-phase__heading">DeFi protocols lose billions because attacks happen faster than humans can respond.</h3>
             <div class="blur-phase__grid">
@@ -135,7 +137,7 @@ export class BlurOverlay extends LitElement {
           </div>
 
           <!-- Phase 1: Why Current Solutions Fail -->
-          <div class="blur-phase ${this.phaseIdx === 1 ? 'blur-phase--active' : ''}">
+          <div class="blur-phase ${this.phaseIdx === 1 ? "blur-phase--active" : ""}">
             <div class="blur-phase__tag">WHY CURRENT DEFENSES FAIL</div>
             <h3 class="blur-phase__heading">Every existing solution is too slow, too passive, or requires human trust.</h3>
             <div class="blur-phase__rows">
@@ -159,7 +161,7 @@ export class BlurOverlay extends LitElement {
           </div>
 
           <!-- Phase 2: The SENTINEL Difference -->
-          <div class="blur-phase ${this.phaseIdx === 2 ? 'blur-phase--active' : ''}">
+          <div class="blur-phase ${this.phaseIdx === 2 ? "blur-phase--active" : ""}">
             <div class="blur-phase__tag">THE SENTINEL DIFFERENCE</div>
             <h3 class="blur-phase__heading">Detect. Respond. Prove. All within the same block.</h3>
             <div class="blur-phase__grid">
@@ -183,6 +185,6 @@ export class BlurOverlay extends LitElement {
           </div>
         </div>
       </div>
-    `
-  }
+    `;
+    }
 }

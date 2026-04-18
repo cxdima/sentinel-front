@@ -1,66 +1,69 @@
-import { LitElement, html } from 'lit'
-import { customElement, state } from 'lit/decorators.js'
-import './nav-bar.css'
+import { LitElement, html } from "lit";
+import { customElement, state } from "lit/decorators.js";
+import "./nav-bar.css";
 
-@customElement('nav-bar')
+@customElement("nav-bar")
 export class NavBar extends LitElement {
-  override createRenderRoot() { return this }
+    override createRenderRoot() {
+        return this;
+    }
 
-  @state() private scrolled = false
-  @state() private route = 'landing'
-  @state() private menuOpen = false
-  @state() private scrollProgress = 0
+    @state() private scrolled = false;
+    @state() private route = "landing";
+    @state() private menuOpen = false;
+    @state() private scrollProgress = 0;
 
-  private ticking = false
+    private ticking = false;
 
-  private readonly onScroll = () => {
-    if (this.ticking) return
-    this.ticking = true
-    requestAnimationFrame(() => {
-      const y = window.scrollY
-      const nextScrolled = y > 10
-      if (nextScrolled !== this.scrolled) this.scrolled = nextScrolled
+    private readonly onScroll = () => {
+        if (this.ticking) return;
+        this.ticking = true;
+        requestAnimationFrame(() => {
+            const y = window.scrollY;
+            const nextScrolled = y > 10;
+            if (nextScrolled !== this.scrolled) this.scrolled = nextScrolled;
 
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight
-      const next = docHeight > 0 ? Math.min(1, y / docHeight) : 0
-      if (Math.abs(next - this.scrollProgress) > 0.002) this.scrollProgress = next
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const next = docHeight > 0 ? Math.min(1, y / docHeight) : 0;
+            if (Math.abs(next - this.scrollProgress) > 0.002) this.scrollProgress = next;
 
-      this.ticking = false
-    })
-  }
+            this.ticking = false;
+        });
+    };
 
-  private readonly onHash = () => {
-    this.route = window.location.hash === '#/dashboard' ? 'dashboard' : 'landing'
-    this.menuOpen = false
-  }
+    private readonly onHash = () => {
+        const h = window.location.hash;
+        this.route = h === "#/dashboard" || h === "#/demo" || h === "#/attacker" ? "dashboard" : "landing";
+        this.menuOpen = false;
+    };
 
-  override connectedCallback() {
-    super.connectedCallback()
-    window.addEventListener('scroll', this.onScroll, { passive: true })
-    window.addEventListener('hashchange', this.onHash)
-    this.onHash()
-  }
+    override connectedCallback() {
+        super.connectedCallback();
+        window.addEventListener("scroll", this.onScroll, { passive: true });
+        window.addEventListener("hashchange", this.onHash);
+        this.onHash();
+    }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback()
-    window.removeEventListener('scroll', this.onScroll)
-    window.removeEventListener('hashchange', this.onHash)
-  }
+    override disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener("scroll", this.onScroll);
+        window.removeEventListener("hashchange", this.onHash);
+    }
 
-  private toggleMenu() {
-    this.menuOpen = !this.menuOpen
-  }
+    private toggleMenu() {
+        this.menuOpen = !this.menuOpen;
+    }
 
-  private closeMenu() {
-    this.menuOpen = false
-  }
+    private closeMenu() {
+        this.menuOpen = false;
+    }
 
-  override render() {
-    if (this.route === 'dashboard') return html``
+    override render() {
+        if (this.route === "dashboard") return html``;
 
-    return html`
+        return html`
       <nav
-        class="navbar ${this.scrolled ? 'navbar--scrolled' : ''} ${this.menuOpen ? 'navbar--open' : ''}"
+        class="navbar ${this.scrolled ? "navbar--scrolled" : ""} ${this.menuOpen ? "navbar--open" : ""}"
         role="navigation"
         aria-label="Main navigation"
       >
@@ -81,11 +84,17 @@ export class NavBar extends LitElement {
           <a href="#problem" class="nav-link">THE PROBLEM</a>
           <a href="#how"     class="nav-link">HOW IT WORKS</a>
           <a href="#compare" class="nav-link">COMPARISON</a>
-          <a href="#sim"     class="nav-link">SIMULATION</a>
+          <a href="#/demo" class="nav-link" @click=${(e: Event) => {
+              e.preventDefault();
+              window.location.hash = "#/demo";
+          }}>LIVE DEMO</a>
         </div>
 
         <div class="navbar__right">
-          <a href="#/dashboard" class="navbar__dashboard-btn" @click=${(e: Event) => { e.preventDefault(); window.location.hash = '#/dashboard' }}>
+          <a href="#/dashboard" class="navbar__dashboard-btn" @click=${(e: Event) => {
+              e.preventDefault();
+              window.location.hash = "#/dashboard";
+          }}>
             <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
               <rect x="1" y="1" width="5" height="5" stroke="currentColor" stroke-width="1" fill="none"/>
               <rect x="8" y="1" width="5" height="5" stroke="currentColor" stroke-width="1" fill="none"/>
@@ -98,7 +107,7 @@ export class NavBar extends LitElement {
           <button
             class="navbar__hamburger"
             @click=${this.toggleMenu}
-            aria-label="${this.menuOpen ? 'Close menu' : 'Open menu'}"
+            aria-label="${this.menuOpen ? "Close menu" : "Open menu"}"
             aria-expanded="${this.menuOpen}"
           >
             <span class="navbar__hamburger-line navbar__hamburger-line--1"></span>
@@ -109,7 +118,7 @@ export class NavBar extends LitElement {
       </nav>
 
       <!-- Mobile menu overlay -->
-      <div class="mobile-menu ${this.menuOpen ? 'mobile-menu--open' : ''}" @click=${this.closeMenu}>
+      <div class="mobile-menu ${this.menuOpen ? "mobile-menu--open" : ""}" @click=${this.closeMenu}>
         <div class="mobile-menu__panel" @click=${(e: Event) => e.stopPropagation()}>
           <div class="mobile-menu__header">
             <span class="mobile-menu__label">NAVIGATION</span>
@@ -128,9 +137,13 @@ export class NavBar extends LitElement {
               <span class="mobile-menu__link-num">03</span>
               <span class="mobile-menu__link-text">COMPARISON</span>
             </a>
-            <a href="#sim" class="mobile-menu__link" @click=${this.closeMenu}>
+            <a href="#/demo" class="mobile-menu__link" @click=${(e: Event) => {
+                e.preventDefault();
+                this.closeMenu();
+                window.location.hash = "#/demo";
+            }}>
               <span class="mobile-menu__link-num">04</span>
-              <span class="mobile-menu__link-text">SIMULATION</span>
+              <span class="mobile-menu__link-text">LIVE DEMO</span>
             </a>
             <a href="#network" class="mobile-menu__link" @click=${this.closeMenu}>
               <span class="mobile-menu__link-num">05</span>
@@ -138,12 +151,25 @@ export class NavBar extends LitElement {
             </a>
           </div>
           <div class="mobile-menu__footer">
-            <a href="#/dashboard" class="btn btn--primary" style="width:100%;justify-content:center" @click=${(e: Event) => { e.preventDefault(); this.closeMenu(); window.location.hash = '#/dashboard' }}>
-              OPEN WAR ROOM
+            <a href="#/demo" class="btn btn--primary" style="width:100%;justify-content:center" @click=${(e: Event) => {
+                e.preventDefault();
+                this.closeMenu();
+                window.location.hash = "#/demo";
+            }}>
+              LAUNCH LIVE DEMO
+            </a>
+            <a href="#/dashboard" class="btn btn--ghost" style="width:100%;justify-content:center;margin-top:8px" @click=${(
+                e: Event,
+            ) => {
+                e.preventDefault();
+                this.closeMenu();
+                window.location.hash = "#/dashboard";
+            }}>
+              VIEW DASHBOARD
             </a>
           </div>
         </div>
       </div>
-    `
-  }
+    `;
+    }
 }
